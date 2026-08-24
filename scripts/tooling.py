@@ -39,6 +39,16 @@ def _json_bytes(value: Any) -> bytes:
     return (json.dumps(value, indent=2, ensure_ascii=False) + "\n").encode()
 
 
+def _openai_yaml(catalog: dict[str, Any]) -> bytes:
+    info = catalog["skills"]["locron"]
+    return (
+        "interface:\n"
+        f'  display_name: "{info["display_name"]}"\n'
+        f'  short_description: "{info["short_description"]}"\n'
+        '  default_prompt: "Use $locron to explain why this Locron job did not run."\n'
+    ).encode()
+
+
 def load_json(path: Path) -> Any:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -224,6 +234,13 @@ def load_project(root: Path) -> tuple[str, dict[str, Any], dict[str, Any]]:
     skill_metadata = _validate_skill_tree(root / "skills/locron")
     if skill_metadata["name"] not in catalog["skills"]:
         raise ValidationError("skill name is missing from catalog metadata")
+    openai_yaml_path = root / "skills/locron/agents/openai.yaml"
+    try:
+        openai_yaml = openai_yaml_path.read_bytes()
+    except FileNotFoundError as exc:
+        raise ValidationError(f"missing OpenAI skill metadata: {openai_yaml_path}") from exc
+    if openai_yaml != _openai_yaml(catalog):
+        raise ValidationError("OpenAI skill metadata differs from catalog or default prompt")
     if skill_metadata.get("license") != "MIT-0":
         raise ValidationError("Locron skill license must be MIT-0")
     if not (root / "LICENSE").is_file() or "MIT No Attribution" not in (root / "LICENSE").read_text():

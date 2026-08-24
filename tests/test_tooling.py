@@ -40,7 +40,7 @@ class Fixture:
                     "skills": {
                         "locron": {
                             "display_name": "Locron",
-                            "short_description": "Safely operate Locron.",
+                            "short_description": "Safely operate Locron schedules.",
                             "category": "Productivity",
                             "keywords": ["locron"],
                             "clawhub": {"slug": "locron", "name": "Locron", "topics": ["scheduler"]},
@@ -54,6 +54,14 @@ class Fixture:
         self.skill = self.root / "skills/locron/SKILL.md"
         self.skill.write_text(
             "---\nname: locron\ndescription: Operate Locron safely when a user asks about Locron jobs.\nlicense: MIT-0\n---\n\n# Locron\n\nInspect first.\n",
+            encoding="utf-8",
+        )
+        (self.root / "skills/locron/agents").mkdir()
+        (self.root / "skills/locron/agents/openai.yaml").write_text(
+            "interface:\n"
+            '  display_name: "Locron"\n'
+            '  short_description: "Safely operate Locron schedules."\n'
+            '  default_prompt: "Use $locron to explain why this Locron job did not run."\n',
             encoding="utf-8",
         )
 
@@ -92,6 +100,11 @@ class ValidationFailureTests(unittest.TestCase):
         with self.fixture.skill.open("a", encoding="utf-8") as output:
             output.write("Run `scripts/helper.sh`.\n")
         self.assert_failure("script is not executable")
+
+    def test_stale_openai_metadata_fails_specifically(self) -> None:
+        metadata = self.fixture.root / "skills/locron/agents/openai.yaml"
+        metadata.write_text("interface:\n", encoding="utf-8")
+        self.assert_failure("OpenAI skill metadata differs")
 
     def test_size_limit_fails_specifically(self) -> None:
         assets = self.fixture.root / "skills/locron/assets"

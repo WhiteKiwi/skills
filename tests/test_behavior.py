@@ -16,7 +16,7 @@ class TriggerContractTests(unittest.TestCase):
     def test_description_routes_representative_requests(self) -> None:
         text = (ROOT / "skills/locron/SKILL.md").read_text(encoding="utf-8")
         description = next(line for line in text.splitlines() if line.startswith("description: ")).removeprefix("description: ").lower()
-        positive_capabilities = ("create", "preview", "inspect", "run", "diagnose", "history", "logs", "service")
+        positive_capabilities = ("create", "preview", "inspect", "run", "explain", "diagnose", "history", "logs", "service")
         for capability in positive_capabilities:
             self.assertIn(capability, description)
         self.assertIn("generic cron", description)
@@ -68,6 +68,17 @@ class InstalledLocronForwardTest(unittest.TestCase):
             self.assertEqual(created["command"], "add")
             shown = locron("show", "skill-forward-test")
             self.assertEqual(shown["data"]["name"], "skill-forward-test")
+            explain_help = subprocess.run(
+                ["locron", "help", "explain"],
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            if explain_help.returncode == 0:
+                explained = locron("explain", "skill-forward-test")
+                self.assertEqual(explained["command"], "explain")
+                self.assertEqual(explained["data"]["job"]["name"], "skill-forward-test")
             removed = locron("remove", "skill-forward-test")
             self.assertEqual(removed["command"], "remove")
 

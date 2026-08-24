@@ -1,6 +1,6 @@
 ---
 name: locron
-description: Safely create, preview, inspect, run, update, remove, import, export, and diagnose schedules managed by the Locron local-first job scheduler. Use when a request names Locron, asks to operate Locron jobs or runs, or needs an explanation of Locron history, logs, policies, daemon health, or service state; do not use for generic cron syntax questions or unrelated task managers.
+description: Safely create, preview, inspect, run, update, remove, import, export, explain, and diagnose schedules managed by the Locron local-first job scheduler. Use when a request names Locron, asks to operate Locron jobs or runs, or needs an explanation of Locron status, history, logs, policies, daemon health, or service state; do not use for generic cron syntax questions or unrelated task managers.
 license: MIT-0
 metadata:
   openclaw:
@@ -16,11 +16,11 @@ Operate the installed Locron CLI while preserving its validation, policy, and au
 ## Discover the installed surface
 
 1. Resolve `locron` from `PATH`. If it is absent, report that prerequisite instead of inventing an installation or command surface.
-2. Run `locron --version --format json` and require a successful `locron.cli/v1` envelope. State the detected version when compatibility matters.
+2. Run `locron --version --format json` and require a successful `locron.cli/v1` envelope. State the detected version when compatibility matters. This workflow is tested against Locron 0.6.0 and can use the installed 0.5.x surface when a newer command is absent.
 3. Before composing an unfamiliar or version-sensitive command, read `locron help <command>` and any nested subcommand help. The installed help overrides examples or assumptions in this skill.
 4. Prefer `--format json` for reads and decisions. Validate `schema`, `ok`, `command`, `data`, and `warnings`; do not parse human prose when JSON is available. Use human output only when the user asks to see it.
 
-If the installed command surface differs from 0.5.0, use only capabilities demonstrated by that surface and tell the user about any material limitation.
+Use only capabilities demonstrated by the installed command surface. In particular, do not assume `explain` exists before checking its help; it was added in Locron 0.6.0.
 
 ## Classify the request
 
@@ -57,12 +57,13 @@ Use only the layers needed for the question:
 
 1. `service status --format json` for registration and supervisor facts.
 2. `doctor --format json` for state paths, daemon reachability, wake socket, migrations, process resolution, and health checks exposed by the installed release.
-3. `why <job> --format json` for the current definition, eligibility, policies, and next durable decisions.
-4. `history [<job>] --format json` to identify the canonical run and outcome.
-5. `why --run <run-id> --format json` for immutable run facts, attempts, events, and terminal reason.
-6. `logs <run-id>` for captured output; add `--attempt`, `--channel`, or `--follow` only when needed.
+3. `explain <job> --format json`, when the installed help exposes it, for the consolidated schedule, current status, latest run, and latest anomaly.
+4. `why <job> --format json` for the detailed current definition, eligibility, policies, schedule cursor, and daemon facts.
+5. `history [<job>] --format json` to identify a canonical run and outcome.
+6. `why --run <run-id> --format json` for immutable run facts, attempts, events, and terminal reason.
+7. `logs <run-id>` for captured output; add `--attempt`, `--channel`, or `--follow` only when needed.
 
-Distinguish observed facts from inference. Locron 0.5.0 does not directly observe machine sleep; schedule gaps and reconciliation events do not prove sleep. Report unavailable facts as unknown, preserve warnings, and do not claim a target executed merely because a run was queued.
+Distinguish observed facts from inference. Locron does not directly observe machine sleep; schedule gaps and reconciliation events do not prove sleep. Report unavailable facts as unknown, preserve warnings, and do not claim a target executed merely because a run was queued.
 
 ## Import and export safely
 

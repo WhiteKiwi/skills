@@ -11,8 +11,8 @@
     {
       "name": "locron",
       "source": "./plugins/locron",
-      "description": "Safely operate and diagnose Locron schedules.",
-      "version": "0.1.0"
+      "description": "Safely operate, explain, and diagnose Locron.",
+      "version": "0.2.0"
     }
   ]
 }
