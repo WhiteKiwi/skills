@@ -1,0 +1,34 @@
+{
+  "schema": "whitekiwi.skills/v1",
+  "repository": "https://github.com/whitekiwi/skills",
+  "publisher": {
+    "name": "WhiteKiwi",
+    "url": "https://github.com/whitekiwi"
+  },
+  "marketplace": {
+    "name": "whitekiwi-skills",
+    "display_name": "WhiteKiwi Skills"
+  },
+  "skills": {
+    "locron": {
+      "display_name": "Locron",
+      "short_description": "Safely operate and diagnose Locron schedules.",
+      "category": "Productivity",
+      "keywords": [
+        "locron",
+        "scheduler",
+        "cron",
+        "automation"
+      ],
+      "clawhub": {
+        "slug": "locron",
+        "name": "Locron",
+        "topics": [
+          "scheduler",
+          "local-first",
+          "automation"
+        ]
+      }
+    }
+  }
+}

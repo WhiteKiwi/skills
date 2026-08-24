@@ -1,0 +1,19 @@
+{
+  "name": "locron",
+  "version": "0.1.0",
+  "description": "Safely create, preview, inspect, run, update, remove, import, export, and diagnose schedules managed by the Locron local-first job scheduler. Use when a request names Locron, asks to operate Locron jobs or runs, or needs an explanation of Locron history, logs, policies, daemon health, or service state; do not use for generic cron syntax questions or unrelated task managers.",
+  "author": {
+    "name": "WhiteKiwi",
+    "url": "https://github.com/whitekiwi"
+  },
+  "homepage": "https://github.com/whitekiwi/locron",
+  "repository": "https://github.com/whitekiwi/skills",
+  "license": "MIT-0",
+  "keywords": [
+    "locron",
+    "scheduler",
+    "cron",
+    "automation"
+  ],
+  "skills": "./skills/"
+}
