@@ -38,10 +38,9 @@ Codex CLI uses `plugin add` for installation. The same generated plugin is avail
 
 ```sh
 openclaw skills install @whitekiwi/locron
-openclaw skills verify @whitekiwi/locron
 ```
 
-The owner-qualified ClawHub reference is the supported registry path. For local development, use the generated payload described below.
+The owner-qualified ClawHub reference is the supported registry path. Review its current scan result on the [Locron ClawHub page](https://clawhub.ai/whitekiwi/skills/locron) before installing. For local development, use the generated payload described below.
 
 ## Use the Locron skill
 
