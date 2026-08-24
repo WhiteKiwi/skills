@@ -1,27 +1,70 @@
 # WhiteKiwi Skills
 
-Portable Agent Skills published from one authored workflow per skill. The first catalog entry helps agents operate [Locron](https://github.com/whitekiwi/locron), the local-first scheduler that explains its durable decisions.
+[![Validate](https://github.com/WhiteKiwi/skills/actions/workflows/validate.yml/badge.svg)](https://github.com/WhiteKiwi/skills/actions/workflows/validate.yml)
+[![Latest release](https://img.shields.io/github/v/release/WhiteKiwi/skills)](https://github.com/WhiteKiwi/skills/releases/latest)
+[![License: MIT-0](https://img.shields.io/badge/license-MIT--0-blue.svg)](LICENSE)
 
-## Install Locron
+Portable [Agent Skills](https://agentskills.io) for Claude Code, Codex and ChatGPT, and OpenClaw. One authored workflow is validated and packaged for every supported client.
 
-The skill requires the `locron` executable on `PATH`. Install Locron before installing the skill and confirm it with:
+The first skill operates [Locron](https://github.com/WhiteKiwi/locron), the local-first scheduler that explains its durable decisions. It lets an agent create and change jobs safely, inspect scheduler state, and diagnose missed or failed runs through the installed Locron CLI.
+
+## Quick start
+
+Install [Locron](https://github.com/WhiteKiwi/locron#installation) first. The skill does not bundle the scheduler and requires `locron` on `PATH`:
 
 ```sh
 locron --version --format json
 ```
 
-The skill checks the installed version and help surface before it acts. It does not bundle or install the scheduler.
+Then install the skill for your client.
 
-## Claude Code
+### Claude Code
 
 ```sh
-claude plugin marketplace add whitekiwi/skills
+claude plugin marketplace add WhiteKiwi/skills
 claude plugin install locron@whitekiwi-skills
 ```
 
-Invoke it explicitly by asking Claude to use the `locron` skill, or make a Locron scheduling or diagnosis request for automatic discovery.
+### Codex and ChatGPT
 
-Update or remove it with:
+```sh
+codex plugin marketplace add WhiteKiwi/skills
+codex plugin add locron@whitekiwi-skills
+```
+
+Codex CLI uses `plugin add` for installation. The same generated plugin is available to the ChatGPT desktop Plugins browser after adding this catalog.
+
+### OpenClaw
+
+```sh
+openclaw skills install @whitekiwi/locron
+openclaw skills verify @whitekiwi/locron
+```
+
+The owner-qualified ClawHub reference is the supported registry path. For local development, use the generated payload described below.
+
+## Use the Locron skill
+
+Ask the agent to use Locron, or invoke the skill explicitly on clients that expose named skill invocation. For example:
+
+```text
+Use the locron skill to explain why the backup job did not run.
+```
+
+The workflow follows four operating rules:
+
+- discover the installed Locron version and help surface before composing commands;
+- prefer versioned `locron.cli/v1` JSON for observations and decisions;
+- dry-run supported mutations, inspect the normalized result, then apply only when the request authorizes it;
+- finish mutations with an exact-target read-back and diagnoses with durable evidence.
+
+Locron 0.6.0's `explain` command is the preferred consolidated job report. The skill falls back to the installed 0.5.x diagnostic surface when `explain` is unavailable, and uses `why --run` for the full immutable attempt and event trace.
+
+Read the authored workflow in [skills/locron/SKILL.md](skills/locron/SKILL.md) and its on-demand [safety reference](skills/locron/references/safety.md).
+
+## Update or remove
+
+### Claude Code
 
 ```sh
 claude plugin marketplace update whitekiwi-skills
@@ -29,81 +72,62 @@ claude plugin update locron@whitekiwi-skills
 claude plugin uninstall locron@whitekiwi-skills
 ```
 
-## OpenClaw
-
-After the first ClawHub publication:
+### Codex and ChatGPT
 
 ```sh
-openclaw skills install @whitekiwi/locron
+codex plugin marketplace upgrade whitekiwi-skills
+codex plugin remove locron@whitekiwi-skills
+codex plugin add locron@whitekiwi-skills
 ```
 
-Update a registry-tracked installation with:
+Remove the catalog itself only when it is no longer needed:
+
+```sh
+codex plugin marketplace remove whitekiwi-skills
+```
+
+### OpenClaw
 
 ```sh
 openclaw skills update @whitekiwi/locron
 ```
 
-OpenClaw 2026.7.1-2 exposes no `skills uninstall` command. Use the client's current managed-skill removal guidance rather than deleting an unknown path. Git and local installs can be used for development but must be reinstalled to update.
+The current native OpenClaw CLI does not expose `skills uninstall`. The standalone `clawhub uninstall` command applies to installations tracked by the standalone ClawHub CLI, not automatically to native OpenClaw-managed installations.
 
-## Codex and ChatGPT
+## Portable by construction
 
-Add the GitHub catalog:
+| Client | Distribution | Generated metadata |
+|---|---|---|
+| Claude Code | Git-hosted plugin marketplace | `.claude-plugin/plugin.json` |
+| Codex and ChatGPT | Git-backed plugin marketplace | `.codex-plugin/plugin.json` and `agents/openai.yaml` |
+| OpenClaw | ClawHub Agent Skill | `metadata.openclaw.requires.bins` |
 
-```sh
-codex plugin marketplace add whitekiwi/skills
-codex plugin add locron@whitekiwi-skills
-```
+`skills/locron/` is the only authored workflow. `scripts/build.sh` produces every adapter from that source, injects only platform-specific metadata, and rejects generated drift. Release archives are deterministic and include checksums.
 
-The plugin is also available from the Plugins browser in the ChatGPT desktop app after adding the catalog. Codex CLI 0.149.1 calls its installation command `plugin add`, not `plugin install`.
+## Local development
 
-Refresh or remove the catalog with:
-
-```sh
-codex plugin marketplace upgrade whitekiwi-skills
-codex plugin remove locron@whitekiwi-skills
-codex plugin marketplace remove whitekiwi-skills
-```
-
-For local experimentation with only the standalone skill, invoke `$skill-installer` and ask it to install `skills/locron` from `whitekiwi/skills`. This is not the supported marketplace update path.
-
-## Manual and local development installs
-
-Clone the repository, validate it, then use the platform's local source support:
+Clone and validate the repository:
 
 ```sh
-git clone https://github.com/whitekiwi/skills.git
+git clone https://github.com/WhiteKiwi/skills.git
 cd skills
 ./scripts/validate.sh
-
-claude plugin marketplace add .
-openclaw skills install ./platforms/openclaw/locron --as locron
-codex plugin marketplace add .
 ```
 
-Keep test configuration isolated and remove the temporary marketplace or installed skill using the client surface available in that version.
+Use a local package without publishing it:
 
-## What the skill does
+```sh
+claude plugin marketplace add .
+codex plugin marketplace add .
+openclaw skills install ./platforms/openclaw/locron --as locron
+```
 
-The skill uses the installed CLI as the authority and follows these boundaries:
-
-- machine-readable `locron.cli/v1` reads before prose parsing;
-- dry-run-first creation, updates, manual runs, imports, pruning, and configuration changes;
-- exact-target read-back and current-request authorization for mutations without dry-run;
-- direct argv targets unless shell semantics are explicitly needed;
-- explicit timezone and missed-run/overlap consequences;
-- evidence-led diagnosis through service state, `doctor`, `why`, `history`, run explanations, and logs;
-- no inference that the machine slept, and no inferred plaintext import/export acknowledgement.
-
-The authored workflow is [skills/locron/SKILL.md](skills/locron/SKILL.md). Generated adapters are never edited directly.
-
-## Build and validate
+Build all generated payloads and reproducible release archives:
 
 ```sh
 ./scripts/build.sh
 ./scripts/validate.sh
 ```
-
-`build.sh` validates the source, regenerates the committed marketplace payloads, and creates deterministic artifacts under `dist/`:
 
 ```text
 dist/
@@ -118,52 +142,48 @@ dist/
 └── SHA256SUMS
 ```
 
-`locron-skill-<version>.zip` contains only the portable skill. It is a release/API convenience artifact and is not presented as a documented ChatGPT installation ZIP.
-
-## Release
-
-Update `VERSION`, rebuild the generated files, validate, and create the matching tag:
-
-```sh
-./scripts/publish.sh --dry-run
-git tag v0.1.0
-git push origin main --tags
-```
-
-The `v*` workflow runs `./scripts/publish.sh --release`. It requires the tag to equal `v$(cat VERSION)`, creates an idempotent GitHub Release, and attaches all ZIPs plus `SHA256SUMS`. When the repository secret `CLAWHUB_TOKEN` is configured, it also publishes the generated OpenClaw payload with an explicit version using `clawhub` 0.23.3. Without that secret, only the ClawHub step is skipped.
-
-For a manual ClawHub publication after authentication:
-
-```sh
-./scripts/publish.sh --clawhub
-```
-
-Submission to Anthropic's official marketplace or OpenAI's universal Plugins Directory is not automated. Each requires a separate account, listing, review, and explicit publish action.
+`locron-skill-<version>.zip` contains only the portable skill. It is a release and API convenience artifact, not a documented ChatGPT installation ZIP.
 
 ## Repository layout
 
 ```text
 skills/locron/                         authored source of truth
 plugins/locron/                        generated Claude/Codex plugin
-.claude-plugin/marketplace.json        generated Claude catalog
-.agents/plugins/marketplace.json       generated Codex catalog
+.claude-plugin/marketplace.json        generated Claude marketplace
+.agents/plugins/marketplace.json       generated Codex marketplace
 platforms/openclaw/locron/             generated OpenClaw skill
-scripts/                               deterministic build and validation
-tests/                                 tooling and isolated Locron checks
+scripts/                               deterministic build, validation, release
+tests/                                 trigger, packaging, and Locron behavior tests
 .github/workflows/                     validation and tagged release
 ```
 
-## Platform differences
+Do not edit generated files directly. Change `skills/locron/`, `catalog.json`, or `VERSION`, then run `./scripts/build.sh`.
 
-| Item | Claude Code | OpenClaw / ClawHub | Codex / ChatGPT |
-|---|---|---|---|
-| Skill compatibility | Agent Skills | Agent Skills plus generated `metadata.openclaw` | Agent Skills |
-| Marketplace | Git-hosted Claude marketplace | ClawHub registry | Git-backed Codex marketplace; optional reviewed Plugins Directory |
-| GitHub installation | Marketplace shorthand | Direct Git is supported but not registry-updateable | Marketplace shorthand |
-| Publish method | Push the GitHub catalog; official directory submission is separate | `clawhub skill publish` | Push the GitHub catalog; public directory submission is separate |
-| Automatic/update path | Marketplace refresh plus plugin update | `skills update` for ClawHub-tracked installs | Marketplace snapshot upgrade; public directory changes require review |
-| Additional manifest | `.claude-plugin/plugin.json` | Nested OpenClaw binary requirement only | `.codex-plugin/plugin.json` |
+## Release
+
+Maintainers update `VERSION`, rebuild, validate, and create the matching tag:
+
+```sh
+./scripts/publish.sh --dry-run
+git tag "v$(cat VERSION)"
+git push origin main --tags
+```
+
+The `v*` workflow verifies that the tag matches `VERSION`, creates an idempotent GitHub Release, and attaches every ZIP plus `SHA256SUMS`. When `CLAWHUB_TOKEN` is configured, it also publishes the generated OpenClaw payload with the same explicit version.
+
+For an authenticated manual ClawHub publication:
+
+```sh
+./scripts/publish.sh --clawhub
+```
+
+## References
+
+- [Agent Skills specification](https://agentskills.io/specification)
+- [Agent Skills authoring best practices](https://agentskills.io/skill-creation/best-practices)
+- [Claude Code plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)
+- [OpenClaw skills and ClawHub](https://docs.openclaw.ai/clawhub)
 
 ## License
 
-This catalog and its skill artifacts are licensed under [MIT-0](LICENSE). Locron itself retains its own licenses; no Locron implementation code is included here.
+This catalog and its skill artifacts are licensed under [MIT-0](LICENSE). Locron retains its own licenses; no Locron implementation code is included here.

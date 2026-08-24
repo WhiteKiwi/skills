@@ -1,10 +1,10 @@
-# Locron 0.5 safety model
+# Locron 0.5+ safety model
 
-Use this reference for operations whose consequences depend on mutation support, policy, or durable state. Confirm the installed help before using any command because this reference describes Locron 0.5.0.
+Use this reference for operations whose consequences depend on mutation support, policy, or durable state. Confirm the installed help before using any command. The mutation boundaries below are verified through Locron 0.6.0; `explain` is available from 0.6.0 and is read-only.
 
 ## Mutation boundary
 
-The following 0.5.0 mutations support a non-mutating `--dry-run`:
+The following mutations support a non-mutating `--dry-run` in Locron 0.5.0 through 0.6.0:
 
 - `add`, `update`, and `run`
 - `import` and `prune`
