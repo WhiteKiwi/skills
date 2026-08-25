@@ -1,10 +1,10 @@
-# Locron 0.5+ safety model
+# Locron 0.5–0.8 safety model
 
-Use this reference for operations whose consequences depend on mutation support, policy, or durable state. Confirm the installed help before using any command. The mutation boundaries below are verified through Locron 0.6.0; `explain` is available from 0.6.0 and is read-only.
+Use this reference for operations whose consequences depend on mutation support, policy, or durable state. Confirm the installed help before using any command. The mutation boundaries below are verified through Locron 0.8.0; `explain` is available from 0.6.0 and the local dashboard from 0.8.0.
 
 ## Mutation boundary
 
-The following mutations support a non-mutating `--dry-run` in Locron 0.5.0 through 0.6.0:
+The following mutations support a non-mutating `--dry-run` in Locron 0.5.0 through 0.8.0:
 
 - `add`, `update`, and `run`
 - `import` and `prune`
@@ -17,8 +17,11 @@ The following operational mutations have no dry-run:
 - `enable`, `disable`, and `remove`
 - `cancel`
 - `service install` and `service uninstall`
+- `dashboard enable`, `dashboard disable`, and token rotation through `dashboard enable --reset`
 
 For these, read the exact target immediately before acting and require authorization in the current request. `cancel --acknowledge-unconfirmed` is a separate risk acceptance, not a routine retry flag.
+
+Dashboard token display is read-only but sensitive. Prefer `dashboard status` for ordinary inspection because it reports token presence and permission posture without the secret. Use `dashboard token` only when the user needs to authenticate locally, never put the token in a URL, and treat `dashboard enable --reset` as deliberate credential rotation that invalidates existing sessions. The dashboard is loopback-only by contract; proxying or tunnelling it changes the exposure boundary and is not an ordinary dashboard operation.
 
 ## Schedule and policy facts
 
