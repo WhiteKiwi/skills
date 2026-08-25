@@ -16,7 +16,7 @@ class TriggerContractTests(unittest.TestCase):
     def test_description_routes_representative_requests(self) -> None:
         text = (ROOT / "skills/locron/SKILL.md").read_text(encoding="utf-8")
         description = next(line for line in text.splitlines() if line.startswith("description: ")).removeprefix("description: ").lower()
-        positive_capabilities = ("create", "preview", "inspect", "run", "explain", "diagnose", "history", "logs", "service")
+        positive_capabilities = ("create", "preview", "inspect", "run", "explain", "diagnose", "history", "logs", "service", "dashboard")
         for capability in positive_capabilities:
             self.assertIn(capability, description)
         self.assertIn("generic cron", description)
@@ -27,6 +27,7 @@ class TriggerContractTests(unittest.TestCase):
             "Preview my Locron weekday schedule in Seoul.",
             "Why did this Locron run fail? Check its history and logs.",
             "Is the Locron daemon service healthy?",
+            "Start my local Locron dashboard and show me how to authenticate.",
             "Dry-run an update to my Locron job.",
         )
         negative_requests = (

@@ -1,6 +1,6 @@
 ---
 name: locron
-description: Safely create, preview, inspect, run, update, remove, import, export, explain, and diagnose schedules managed by the Locron local-first job scheduler. Use when a request names Locron, asks to operate Locron jobs or runs, or needs an explanation of Locron status, history, logs, policies, daemon health, or service state; do not use for generic cron syntax questions or unrelated task managers.
+description: Safely create, preview, inspect, run, update, remove, import, export, explain, diagnose, and manage the local dashboard for schedules managed by the Locron local-first job scheduler. Use when a request names Locron, asks to operate Locron jobs or runs, or needs an explanation of Locron status, history, logs, policies, daemon health, service state, or dashboard; do not use for generic cron syntax questions or unrelated task managers.
 license: MIT-0
 metadata:
   openclaw:
@@ -16,7 +16,7 @@ Operate the installed Locron CLI while preserving its validation, policy, and au
 ## Discover the installed surface
 
 1. Resolve `locron` from `PATH`. If it is absent, report that prerequisite instead of inventing an installation or command surface.
-2. Run `locron --version --format json` and require a successful `locron.cli/v1` envelope. State the detected version when compatibility matters. This workflow is tested against Locron 0.6.0 and can use the installed 0.5.x surface when a newer command is absent.
+2. Run `locron --version --format json` and require a successful `locron.cli/v1` envelope. State the detected version when compatibility matters. This workflow is tested against Locron 0.8.0 and can use an older installed surface when a newer command is absent.
 3. Before composing an unfamiliar or version-sensitive command, read `locron help <command>` and any nested subcommand help. The installed help overrides examples or assumptions in this skill.
 4. Prefer `--format json` for reads and decisions. Validate `schema`, `ok`, `command`, `data`, and `warnings`; do not parse human prose when JSON is available. Use human output only when the user asks to see it.
 
@@ -51,12 +51,21 @@ Do not enable a job merely because it was previewed. Do not replace a direct tar
 - Configuration: read current settings first. Dry-run supported `config set` and `config unset` mutations before applying them. Do not echo configured secret values.
 - Service install/uninstall: check `service status` first. These alter per-user service registration and have no dry-run; perform only when explicitly requested. Do not substitute package-manager service commands unless installed help says Locron refuses its own registration and the user authorizes that alternative.
 
+## Manage the local dashboard
+
+Use dashboard commands only when `locron help dashboard` exposes them. The dashboard is a separate, optional loopback-only process over the same local durable state; it is not remote access and must not be proxied or tunnelled as if it were a multi-user control plane.
+
+- Inspect `dashboard status --format json` before changing its service registration. Report registration, loaded state, URL, and token-file posture without retrieving or exposing the token.
+- Run foreground `dashboard` or `dashboard serve` only when the user asks to start an interactive local session. Return its exact printed loopback URL and keep the process lifecycle explicit.
+- Treat `dashboard enable`, `dashboard disable`, and `dashboard enable --reset` as service mutations without dry-run. Require current authorization, inspect status first, and read status back afterward. `--reset` rotates the access token and invalidates existing dashboard sessions; never add it merely to repair or restart the service.
+- Run `dashboard token` only when the user explicitly needs the secret for local authentication. Do not place the token in URLs, command logs, durable notes, or messages to third parties, and do not claim that `dashboard status` reveals it.
+
 ## Diagnose and explain
 
 Use only the layers needed for the question:
 
-1. `service status --format json` for registration and supervisor facts.
-2. `doctor --format json` for state paths, daemon reachability, wake socket, migrations, process resolution, and health checks exposed by the installed release.
+1. `service status --format json` for daemon registration and supervisor facts; `dashboard status --format json` for the separate dashboard service when relevant.
+2. `doctor --format json` for state paths, daemon reachability, wake socket, migrations, process resolution, dashboard exposure posture, and health checks exposed by the installed release.
 3. `explain <job> --format json`, when the installed help exposes it, for the consolidated schedule, current status, latest run, and latest anomaly.
 4. `why <job> --format json` for the detailed current definition, eligibility, policies, schedule cursor, and daemon facts.
 5. `history [<job>] --format json` to identify a canonical run and outcome.

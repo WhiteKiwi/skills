@@ -57,7 +57,7 @@ The workflow follows four operating rules:
 - dry-run supported mutations, inspect the normalized result, then apply only when the request authorizes it;
 - finish mutations with an exact-target read-back and diagnoses with durable evidence.
 
-Locron 0.6.0's `explain` command is the preferred consolidated job report. The skill falls back to the installed 0.5.x diagnostic surface when `explain` is unavailable, and uses `why --run` for the full immutable attempt and event trace.
+The workflow is tested through Locron 0.8.0. It uses `explain` for the preferred consolidated job report, `why --run` for the full immutable attempt and event trace, and the installed `dashboard` help surface for safe local dashboard lifecycle operations. It falls back to the capabilities exposed by older installed versions instead of assuming newer commands exist.
 
 Read the authored workflow in [skills/locron/SKILL.md](skills/locron/SKILL.md) and its on-demand [safety reference](skills/locron/references/safety.md).
 

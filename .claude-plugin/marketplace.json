@@ -12,7 +12,7 @@
       "name": "locron",
       "source": "./plugins/locron",
       "description": "Safely operate, explain, and diagnose Locron.",
-      "version": "0.2.0"
+      "version": "0.3.0"
     }
   ]
 }
