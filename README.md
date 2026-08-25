@@ -4,46 +4,60 @@
 [![Latest release](https://img.shields.io/github/v/release/WhiteKiwi/skills)](https://github.com/WhiteKiwi/skills/releases/latest)
 [![License: MIT-0](https://img.shields.io/badge/license-MIT--0-blue.svg)](LICENSE)
 
-Portable [Agent Skills](https://agentskills.io) for Claude Code, Codex and ChatGPT, and OpenClaw. Each authored workflow is validated and packaged for every supported client.
+Portable [Agent Skills](https://agentskills.io) for Claude Code, Codex and ChatGPT, and OpenClaw. Each workflow is published as a separately installable plugin or skill, so you can install only what you need.
 
-The catalog includes:
+## Available skills
 
-- [Locron](https://github.com/WhiteKiwi/locron): safely create and change local schedules, inspect durable state, and diagnose missed or failed runs.
-- [Pushman](https://github.com/WhiteKiwi/pushman-cli): safely send personal iPhone notifications and inspect devices, history, usage, and delivery diagnostics through MCP or the CLI.
+| Skill | What it does | Requires | Install name |
+|---|---|---|---|
+| [Locron](skills/locron/SKILL.md) | Safely operate and diagnose local schedules | [`locron`](https://github.com/WhiteKiwi/locron#installation) on `PATH` | `locron` |
+| [Pushman](skills/pushman/SKILL.md) | Safely send and inspect personal iPhone notifications | [`pushman`](https://github.com/WhiteKiwi/pushman-cli/blob/main/docs/INSTALL.md) on `PATH` | `pushman` |
 
-## Quick start
+The marketplace is the catalog, not an all-in-one bundle. Adding it makes the entries discoverable; it does **not** install every plugin. Install one or both entries explicitly.
 
-Install the command required by the skill you want. Skills do not bundle their applications:
-
-```sh
-locron --version --format json
-pushman version
-```
-
-Then install the skill for your client.
+## Install only what you need
 
 ### Claude Code
 
+Register the catalog once:
+
 ```sh
 claude plugin marketplace add WhiteKiwi/skills
+```
+
+Then choose a plugin:
+
+```sh
 claude plugin install locron@whitekiwi-skills
+# or
 claude plugin install pushman@whitekiwi-skills
 ```
 
 ### Codex and ChatGPT
 
+Register the catalog once:
+
 ```sh
 codex plugin marketplace add WhiteKiwi/skills
+```
+
+Then choose a plugin:
+
+```sh
 codex plugin add locron@whitekiwi-skills
+# or
 codex plugin add pushman@whitekiwi-skills
 ```
 
-Codex CLI uses `plugin add` for installation. The same generated plugin is available to the ChatGPT desktop Plugins browser after adding this catalog.
+Codex CLI uses `plugin add` for installation. The same catalog is available in the ChatGPT desktop Plugins directory after registration, where Locron and Pushman remain separate install choices.
 
 ### OpenClaw
 
+Install a skill directly by its owner-qualified ClawHub reference:
+
 ```sh
 openclaw skills install @whitekiwi/locron
+# or
 openclaw skills install @whitekiwi/pushman
 ```
 
@@ -124,7 +138,9 @@ openclaw skills update @whitekiwi/pushman
 
 The current native OpenClaw CLI does not expose `skills uninstall`. The standalone `clawhub uninstall` command applies to installations tracked by the standalone ClawHub CLI, not automatically to native OpenClaw-managed installations.
 
-## Portable by construction
+## Distribution model
+
+The install boundary is a plugin, not the entire repository. WhiteKiwi publishes an independent plugin for each standalone workflow. A plugin may contain more than one skill only when those skills form one coherent capability that users would normally install together.
 
 | Client | Distribution | Generated metadata |
 |---|---|---|
@@ -132,7 +148,7 @@ The current native OpenClaw CLI does not expose `skills uninstall`. The standalo
 | Codex and ChatGPT | Git-backed plugin marketplace | `.codex-plugin/plugin.json` and `agents/openai.yaml` |
 | OpenClaw | ClawHub Agent Skill | `metadata.openclaw.requires.bins` |
 
-Each `skills/<name>/` directory is an authored workflow. `scripts/build.sh` produces every adapter from those sources, injects only platform-specific metadata, and rejects generated drift. Release archives are deterministic and include checksums.
+Each `skills/<name>/` directory is an authored workflow. Its generated `plugins/<name>/` package contains only that workflow, so installing `locron` does not install `pushman`, and vice versa. `scripts/build.sh` produces every adapter from those sources, injects only platform-specific metadata, and rejects generated drift. Release archives are deterministic and include checksums.
 
 ## Local development
 
@@ -173,16 +189,17 @@ dist/
 └── SHA256SUMS
 ```
 
-`locron-skill-<version>.zip` contains only the portable skill. It is a release and API convenience artifact, not a documented ChatGPT installation ZIP.
+Each `<skill>-skill-<version>.zip` contains only that portable skill. These archives are release and API convenience artifacts, not documented ChatGPT installation ZIPs.
 
 ## Repository layout
 
 ```text
 skills/<name>/                         authored sources of truth
-plugins/<name>/                        generated Claude/Codex plugins
-.claude-plugin/marketplace.json        generated Claude marketplace
-.agents/plugins/marketplace.json       generated Codex marketplace
+plugins/<name>/                        generated, independently installable plugin
+.claude-plugin/marketplace.json        generated catalog of Claude plugins
+.agents/plugins/marketplace.json       generated catalog of Codex/ChatGPT plugins
 platforms/openclaw/<name>/             generated OpenClaw skills
+catalog.json                           catalog and packaging metadata
 scripts/                               deterministic build, validation, release
 tests/                                 trigger, packaging, and behavior tests
 .github/workflows/                     validation and tagged release
@@ -212,6 +229,8 @@ For an authenticated manual ClawHub publication:
 
 - [Agent Skills specification](https://agentskills.io/specification)
 - [Agent Skills authoring best practices](https://agentskills.io/skill-creation/best-practices)
+- [OpenAI plugin packaging](https://developers.openai.com/codex/plugins/build)
+- [OpenAI plugin examples](https://github.com/openai/plugins)
 - [Claude Code plugin marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)
 - [OpenClaw skills and ClawHub](https://docs.openclaw.ai/clawhub)
 
