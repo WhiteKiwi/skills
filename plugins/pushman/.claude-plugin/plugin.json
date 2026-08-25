@@ -1,0 +1,20 @@
+{
+  "name": "pushman",
+  "version": "0.4.0",
+  "description": "Safely send, inspect, and diagnose personal iPhone notifications through Pushman MCP tools or the installed Pushman CLI. Use when a request names Pushman, asks to notify the user from an agent or terminal workflow, targets Pushman devices, history, usage, pairing, or delivery diagnostics, or needs help configuring the local Pushman MCP server; do not use for implementing generic APNs/FCM push systems or operating unrelated notification services.",
+  "author": {
+    "name": "WhiteKiwi",
+    "url": "https://github.com/whitekiwi"
+  },
+  "homepage": "https://github.com/WhiteKiwi/pushman-cli",
+  "repository": "https://github.com/whitekiwi/skills",
+  "license": "MIT-0",
+  "keywords": [
+    "pushman",
+    "notifications",
+    "iphone",
+    "automation",
+    "mcp"
+  ],
+  "skills": "./skills/"
+}

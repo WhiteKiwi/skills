@@ -21,10 +21,7 @@ SCRIPT_REF_RE = re.compile(r"(?<![A-Za-z0-9_.-])(scripts/[A-Za-z0-9_./-]+)")
 MAX_CLAWHUB_BYTES = 50 * 1024 * 1024
 ZIP_TIME = (1980, 1, 1, 0, 0, 0)
 
-GENERATED_DIRS = (
-    Path("plugins/locron"),
-    Path("platforms/openclaw/locron"),
-)
+GENERATED_ROOTS = (Path("plugins"), Path("platforms/openclaw"))
 GENERATED_FILES = (
     Path(".claude-plugin/marketplace.json"),
     Path(".agents/plugins/marketplace.json"),
@@ -39,13 +36,13 @@ def _json_bytes(value: Any) -> bytes:
     return (json.dumps(value, indent=2, ensure_ascii=False) + "\n").encode()
 
 
-def _openai_yaml(catalog: dict[str, Any]) -> bytes:
-    info = catalog["skills"]["locron"]
+def _openai_yaml(catalog: dict[str, Any], skill_name: str) -> bytes:
+    info = catalog["skills"][skill_name]
     return (
         "interface:\n"
         f'  display_name: "{info["display_name"]}"\n'
         f'  short_description: "{info["short_description"]}"\n'
-        '  default_prompt: "Use $locron to explain why this Locron job did not run."\n'
+        f'  default_prompt: "{info["default_prompt"]}"\n'
     ).encode()
 
 
@@ -149,7 +146,9 @@ def parse_frontmatter(path: Path) -> tuple[dict[str, Any], str, str]:
     return metadata, body, raw
 
 
-def _validate_skill_tree(skill_dir: Path, *, openclaw: bool = False) -> dict[str, Any]:
+def _validate_skill_tree(
+    skill_dir: Path, *, openclaw: bool = False, required_bins: list[str] | None = None
+) -> dict[str, Any]:
     if skill_dir.is_symlink():
         raise ValidationError(f"path containment violation: skill directory is a symlink: {skill_dir}")
     metadata, body, _ = parse_frontmatter(skill_dir / "SKILL.md")
@@ -170,8 +169,8 @@ def _validate_skill_tree(skill_dir: Path, *, openclaw: bool = False) -> dict[str
             bins = metadata["metadata"]["openclaw"]["requires"]["bins"]
         except (KeyError, TypeError) as exc:
             raise ValidationError("OpenClaw metadata.openclaw.requires.bins is missing") from exc
-        if bins != ["locron"]:
-            raise ValidationError("OpenClaw requires.bins must equal ['locron']")
+        if bins != required_bins:
+            raise ValidationError(f"OpenClaw requires.bins must equal {required_bins!r}")
 
     total_size = 0
     for path in sorted(skill_dir.rglob("*")):
@@ -213,7 +212,7 @@ def _validate_skill_tree(skill_dir: Path, *, openclaw: bool = False) -> dict[str
     return metadata
 
 
-def load_project(root: Path) -> tuple[str, dict[str, Any], dict[str, Any]]:
+def load_project(root: Path) -> tuple[str, dict[str, Any], dict[str, dict[str, Any]]]:
     version_path = root / "VERSION"
     try:
         version = version_path.read_text(encoding="utf-8").strip()
@@ -229,20 +228,52 @@ def load_project(root: Path) -> tuple[str, dict[str, Any], dict[str, Any]]:
         raise ValidationError("catalog.json schema must be whitekiwi.skills/v1")
     if catalog["repository"] != "https://github.com/whitekiwi/skills":
         raise ValidationError("catalog repository URL is invalid")
-    if set(catalog["skills"]) != {"locron"}:
-        raise ValidationError("catalog must contain exactly the locron skill for this release")
-    skill_metadata = _validate_skill_tree(root / "skills/locron")
-    if skill_metadata["name"] not in catalog["skills"]:
-        raise ValidationError("skill name is missing from catalog metadata")
-    openai_yaml_path = root / "skills/locron/agents/openai.yaml"
-    try:
-        openai_yaml = openai_yaml_path.read_bytes()
-    except FileNotFoundError as exc:
-        raise ValidationError(f"missing OpenAI skill metadata: {openai_yaml_path}") from exc
-    if openai_yaml != _openai_yaml(catalog):
-        raise ValidationError("OpenAI skill metadata differs from catalog or default prompt")
-    if skill_metadata.get("license") != "MIT-0":
-        raise ValidationError("Locron skill license must be MIT-0")
+    skills = catalog["skills"]
+    if not isinstance(skills, dict) or not skills:
+        raise ValidationError("catalog must contain at least one skill")
+    authored_root = root / "skills"
+    authored_names = {path.name for path in authored_root.iterdir() if path.is_dir()}
+    if authored_names != set(skills):
+        raise ValidationError(
+            f"catalog/authored skill mismatch; catalog={sorted(skills)}, authored={sorted(authored_names)}"
+        )
+    skill_metadata: dict[str, dict[str, Any]] = {}
+    required_info = {
+        "display_name",
+        "short_description",
+        "category",
+        "homepage",
+        "required_bins",
+        "capabilities",
+        "default_prompt",
+        "default_prompts",
+        "keywords",
+        "clawhub",
+    }
+    for skill_name, info in sorted(skills.items()):
+        if not isinstance(info, dict) or not required_info.issubset(info):
+            raise ValidationError(f"catalog metadata is incomplete for skill {skill_name!r}")
+        if not NAME_RE.fullmatch(skill_name):
+            raise ValidationError(f"invalid catalog skill name: {skill_name!r}")
+        if not isinstance(info["required_bins"], list) or not info["required_bins"]:
+            raise ValidationError(f"required_bins must be a non-empty list for {skill_name}")
+        if not isinstance(info["capabilities"], list) or not info["capabilities"]:
+            raise ValidationError(f"capabilities must be a non-empty list for {skill_name}")
+        if not isinstance(info["default_prompts"], list) or not info["default_prompts"]:
+            raise ValidationError(f"default_prompts must be a non-empty list for {skill_name}")
+        metadata = _validate_skill_tree(authored_root / skill_name)
+        if metadata["name"] != skill_name:
+            raise ValidationError(f"skill name is missing from catalog metadata: {skill_name}")
+        openai_yaml_path = authored_root / skill_name / "agents/openai.yaml"
+        try:
+            openai_yaml = openai_yaml_path.read_bytes()
+        except FileNotFoundError as exc:
+            raise ValidationError(f"missing OpenAI skill metadata: {openai_yaml_path}") from exc
+        if openai_yaml != _openai_yaml(catalog, skill_name):
+            raise ValidationError(f"OpenAI skill metadata differs for {skill_name}")
+        if metadata.get("license") != "MIT-0":
+            raise ValidationError(f"{skill_name} skill license must be MIT-0")
+        skill_metadata[skill_name] = metadata
     if not (root / "LICENSE").is_file() or "MIT No Attribution" not in (root / "LICENSE").read_text():
         raise ValidationError("repository LICENSE must contain MIT-0 text")
     for script in sorted((root / "scripts").iterdir()):
@@ -251,8 +282,8 @@ def load_project(root: Path) -> tuple[str, dict[str, Any], dict[str, Any]]:
     return version, catalog, skill_metadata
 
 
-def _source_files(root: Path) -> dict[Path, bytes]:
-    skill = root / "skills/locron"
+def _source_files(root: Path, skill_name: str) -> dict[Path, bytes]:
+    skill = root / "skills" / skill_name
     files: dict[Path, bytes] = {}
     for path in sorted(skill.rglob("*")):
         if path.is_file():
@@ -260,100 +291,96 @@ def _source_files(root: Path) -> dict[Path, bytes]:
     return files
 
 
-def _openclaw_skill(source: bytes) -> bytes:
+def _openclaw_skill(source: bytes, required_bins: list[str]) -> bytes:
     text = source.decode("utf-8")
     end = text.find("\n---\n", 4)
     if end < 0:
         raise ValidationError("cannot inject OpenClaw metadata into invalid frontmatter")
-    injection = "\nmetadata:\n  openclaw:\n    requires:\n      bins:\n        - locron"
+    bins = "".join(f"\n        - {name}" for name in required_bins)
+    injection = "\nmetadata:\n  openclaw:\n    requires:\n      bins:" + bins
     return (text[:end] + injection + text[end:]).encode()
 
 
 def expected_generated(root: Path) -> dict[Path, bytes]:
     version, catalog, skill_metadata = load_project(root)
-    info = catalog["skills"]["locron"]
     publisher = catalog["publisher"]
     repository = catalog["repository"]
-    description = skill_metadata["description"]
-    keywords = info["keywords"]
+    result: dict[Path, bytes] = {}
+    claude_plugins = []
+    codex_plugins = []
+    for skill_name, metadata in sorted(skill_metadata.items()):
+        info = catalog["skills"][skill_name]
+        description = metadata["description"]
+        claude_plugin = {
+            "name": skill_name,
+            "version": version,
+            "description": description,
+            "author": {"name": publisher["name"], "url": publisher["url"]},
+            "homepage": info["homepage"],
+            "repository": repository,
+            "license": "MIT-0",
+            "keywords": info["keywords"],
+            "skills": "./skills/",
+        }
+        codex_plugin = {
+            **claude_plugin,
+            "interface": {
+                "displayName": info["display_name"],
+                "shortDescription": info["short_description"],
+                "longDescription": description,
+                "developerName": publisher["name"],
+                "category": info["category"],
+                "capabilities": info["capabilities"],
+                "websiteURL": info["homepage"],
+                "defaultPrompt": info["default_prompts"],
+            },
+        }
+        result[Path(f"plugins/{skill_name}/.claude-plugin/plugin.json")] = _json_bytes(claude_plugin)
+        result[Path(f"plugins/{skill_name}/.codex-plugin/plugin.json")] = _json_bytes(codex_plugin)
+        for relative, content in _source_files(root, skill_name).items():
+            result[Path(f"plugins/{skill_name}/skills/{skill_name}") / relative] = content
+            openclaw = (
+                _openclaw_skill(content, info["required_bins"])
+                if relative == Path("SKILL.md")
+                else content
+            )
+            result[Path(f"platforms/openclaw/{skill_name}") / relative] = openclaw
+        claude_plugins.append(
+            {
+                "name": skill_name,
+                "source": f"./plugins/{skill_name}",
+                "description": info["short_description"],
+                "version": version,
+            }
+        )
+        codex_plugins.append(
+            {
+                "name": skill_name,
+                "source": {"source": "local", "path": f"./plugins/{skill_name}"},
+                "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
+                "category": info["category"],
+            }
+        )
 
-    claude_plugin = {
-        "name": "locron",
-        "version": version,
-        "description": description,
-        "author": {"name": publisher["name"], "url": publisher["url"]},
-        "homepage": "https://github.com/whitekiwi/locron",
-        "repository": repository,
-        "license": "MIT-0",
-        "keywords": keywords,
-        "skills": "./skills/",
-    }
-    codex_plugin = {
-        "name": "locron",
-        "version": version,
-        "description": description,
-        "author": {"name": publisher["name"], "url": publisher["url"]},
-        "homepage": "https://github.com/whitekiwi/locron",
-        "repository": repository,
-        "license": "MIT-0",
-        "keywords": keywords,
-        "skills": "./skills/",
-        "interface": {
-            "displayName": info["display_name"],
-            "shortDescription": info["short_description"],
-            "longDescription": description,
-            "developerName": publisher["name"],
-            "category": info["category"],
-            "capabilities": ["Scheduling", "Diagnostics"],
-            "websiteURL": "https://github.com/whitekiwi/locron",
-            "defaultPrompt": [
-                "Preview and safely create a Locron schedule.",
-                "Diagnose why a Locron job did not run.",
-            ],
-        },
-    }
     claude_marketplace = {
         "name": catalog["marketplace"]["name"],
         "owner": {"name": publisher["name"], "url": publisher["url"]},
         "metadata": {"description": "Portable Agent Skills published by WhiteKiwi"},
-        "plugins": [
-            {
-                "name": "locron",
-                "source": "./plugins/locron",
-                "description": info["short_description"],
-                "version": version,
-            }
-        ],
+        "plugins": claude_plugins,
     }
     codex_marketplace = {
         "name": catalog["marketplace"]["name"],
         "interface": {"displayName": catalog["marketplace"]["display_name"]},
-        "plugins": [
-            {
-                "name": "locron",
-                "source": {"source": "local", "path": "./plugins/locron"},
-                "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
-                "category": info["category"],
-            }
-        ],
+        "plugins": codex_plugins,
     }
-
-    result: dict[Path, bytes] = {
-        Path("plugins/locron/.claude-plugin/plugin.json"): _json_bytes(claude_plugin),
-        Path("plugins/locron/.codex-plugin/plugin.json"): _json_bytes(codex_plugin),
-        Path(".claude-plugin/marketplace.json"): _json_bytes(claude_marketplace),
-        Path(".agents/plugins/marketplace.json"): _json_bytes(codex_marketplace),
-    }
-    for relative, content in _source_files(root).items():
-        result[Path("plugins/locron/skills/locron") / relative] = content
-        openclaw = _openclaw_skill(content) if relative == Path("SKILL.md") else content
-        result[Path("platforms/openclaw/locron") / relative] = openclaw
+    result[Path(".claude-plugin/marketplace.json")] = _json_bytes(claude_marketplace)
+    result[Path(".agents/plugins/marketplace.json")] = _json_bytes(codex_marketplace)
     return result
 
 
 def _actual_generated_files(root: Path) -> set[Path]:
     actual: set[Path] = set()
-    for directory in GENERATED_DIRS:
+    for directory in GENERATED_ROOTS:
         full = root / directory
         if full.exists():
             actual.update(path.relative_to(root) for path in full.rglob("*") if path.is_file())
@@ -373,51 +400,66 @@ def validate_generated(root: Path) -> None:
             raise ValidationError(f"generated file drift: {relative}; run ./scripts/build.sh")
 
     version, catalog, metadata = load_project(root)
-    for manifest_path in (
-        root / "plugins/locron/.claude-plugin/plugin.json",
-        root / "plugins/locron/.codex-plugin/plugin.json",
-    ):
-        manifest = load_json(manifest_path)
-        if manifest.get("name") != metadata["name"]:
-            raise ValidationError(f"manifest name mismatch: {manifest_path}")
-        if manifest.get("version") != version:
-            raise ValidationError(f"manifest version mismatch: {manifest_path}")
-        skills_path = manifest.get("skills")
-        if not isinstance(skills_path, str) or not skills_path.startswith("./") or ".." in PurePosixPath(skills_path).parts:
-            raise ValidationError(f"invalid contained skills path: {manifest_path}")
+    for skill_name in sorted(metadata):
+        for manifest_path in (
+            root / f"plugins/{skill_name}/.claude-plugin/plugin.json",
+            root / f"plugins/{skill_name}/.codex-plugin/plugin.json",
+        ):
+            manifest = load_json(manifest_path)
+            if manifest.get("name") != skill_name:
+                raise ValidationError(f"manifest name mismatch: {manifest_path}")
+            if manifest.get("version") != version:
+                raise ValidationError(f"manifest version mismatch: {manifest_path}")
+            skills_path = manifest.get("skills")
+            if not isinstance(skills_path, str) or not skills_path.startswith("./") or ".." in PurePosixPath(skills_path).parts:
+                raise ValidationError(f"invalid contained skills path: {manifest_path}")
     claude_market = load_json(root / ".claude-plugin/marketplace.json")
     codex_market = load_json(root / ".agents/plugins/marketplace.json")
     if claude_market.get("name") != catalog["marketplace"]["name"]:
         raise ValidationError("Claude marketplace name mismatch")
     if codex_market.get("name") != catalog["marketplace"]["name"]:
         raise ValidationError("Codex marketplace name mismatch")
-    for path_value in (
-        claude_market["plugins"][0]["source"],
-        codex_market["plugins"][0]["source"]["path"],
-    ):
+    if {item["name"] for item in claude_market["plugins"]} != set(metadata):
+        raise ValidationError("Claude marketplace skill set mismatch")
+    if {item["name"] for item in codex_market["plugins"]} != set(metadata):
+        raise ValidationError("Codex marketplace skill set mismatch")
+    for item in claude_market["plugins"]:
+        path_value = item["source"]
         parts = PurePosixPath(path_value).parts
         if not path_value.startswith("./") or ".." in parts:
             raise ValidationError(f"marketplace path escape: {path_value}")
-    _validate_skill_tree(root / "plugins/locron/skills/locron")
-    _validate_skill_tree(root / "platforms/openclaw/locron", openclaw=True)
+    for item in codex_market["plugins"]:
+        path_value = item["source"]["path"]
+        parts = PurePosixPath(path_value).parts
+        if not path_value.startswith("./") or ".." in parts:
+            raise ValidationError(f"marketplace path escape: {path_value}")
 
-    source = _source_files(root)
-    generated_skill = {
-        path.relative_to(root / "plugins/locron/skills/locron"): path.read_bytes()
-        for path in (root / "plugins/locron/skills/locron").rglob("*")
-        if path.is_file()
-    }
-    if source != generated_skill:
-        raise ValidationError("generated plugin skill is not byte-equivalent to authored source")
-    _, source_body, _ = parse_frontmatter(root / "skills/locron/SKILL.md")
-    _, claw_body, _ = parse_frontmatter(root / "platforms/openclaw/locron/SKILL.md")
-    if source_body != claw_body:
-        raise ValidationError("OpenClaw Markdown body differs from authored source")
+    for skill_name in sorted(metadata):
+        info = catalog["skills"][skill_name]
+        generated_root = root / f"plugins/{skill_name}/skills/{skill_name}"
+        _validate_skill_tree(generated_root)
+        _validate_skill_tree(
+            root / f"platforms/openclaw/{skill_name}",
+            openclaw=True,
+            required_bins=info["required_bins"],
+        )
+        source = _source_files(root, skill_name)
+        generated_skill = {
+            path.relative_to(generated_root): path.read_bytes()
+            for path in generated_root.rglob("*")
+            if path.is_file()
+        }
+        if source != generated_skill:
+            raise ValidationError(f"generated {skill_name} plugin is not byte-equivalent to authored source")
+        _, source_body, _ = parse_frontmatter(root / f"skills/{skill_name}/SKILL.md")
+        _, claw_body, _ = parse_frontmatter(root / f"platforms/openclaw/{skill_name}/SKILL.md")
+        if source_body != claw_body:
+            raise ValidationError(f"OpenClaw Markdown body differs for {skill_name}")
 
 
 def write_generated(root: Path) -> None:
     expected = expected_generated(root)
-    for directory in GENERATED_DIRS:
+    for directory in GENERATED_ROOTS:
         target = root / directory
         if target.exists():
             if target.is_symlink() or not target.is_dir():
@@ -440,7 +482,7 @@ def _copy_payload(source_files: Iterable[tuple[Path, bytes]], destination: Path)
         target.write_bytes(content)
 
 
-def _zip_tree(source: Path, archive: Path, root_name: str = "locron") -> None:
+def _zip_tree(source: Path, archive: Path, root_name: str) -> None:
     archive.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as output:
         for path in sorted(item for item in source.rglob("*") if item.is_file()):
@@ -456,7 +498,7 @@ def _zip_tree(source: Path, archive: Path, root_name: str = "locron") -> None:
 def build(root: Path, dist: Path) -> None:
     write_generated(root)
     validate_generated(root)
-    marker_name = ".locron-skill-dist"
+    marker_name = ".whitekiwi-skills-dist"
     if dist.exists():
         if dist.is_symlink() or not dist.is_dir():
             raise ValidationError(f"refusing to replace unsafe dist path: {dist}")
@@ -466,58 +508,67 @@ def build(root: Path, dist: Path) -> None:
     dist.mkdir(parents=True)
     (dist / marker_name).write_text("generated by whitekiwi/skills\n", encoding="utf-8")
 
-    plugin_source = root / "plugins/locron"
-    shared_skill = [
-        (path.relative_to(plugin_source), path.read_bytes())
-        for path in sorted((plugin_source / "skills/locron").rglob("*"))
-        if path.is_file()
-    ]
-    claude_files = shared_skill + [
-        (Path(".claude-plugin/plugin.json"), (plugin_source / ".claude-plugin/plugin.json").read_bytes())
-    ]
-    codex_files = shared_skill + [
-        (Path(".codex-plugin/plugin.json"), (plugin_source / ".codex-plugin/plugin.json").read_bytes())
-    ]
-    _copy_payload(claude_files, dist / "claude/locron")
-    _copy_payload(codex_files, dist / "codex/locron")
-    _copy_payload(
-        (
-            (path.relative_to(root / "platforms/openclaw/locron"), path.read_bytes())
-            for path in sorted((root / "platforms/openclaw/locron").rglob("*"))
+    version, catalog, _ = load_project(root)
+    archives: list[tuple[Path, Path, str]] = []
+    for skill_name in sorted(catalog["skills"]):
+        plugin_source = root / "plugins" / skill_name
+        generated_skill = plugin_source / "skills" / skill_name
+        shared_skill = [
+            (path.relative_to(plugin_source), path.read_bytes())
+            for path in sorted(generated_skill.rglob("*"))
             if path.is_file()
-        ),
-        dist / "openclaw/locron",
-    )
-    _copy_payload(
-        ((path.relative_to(root / "skills/locron"), path.read_bytes()) for path in sorted((root / "skills/locron").rglob("*")) if path.is_file()),
-        dist / "skill/locron",
-    )
-
-    version = (root / "VERSION").read_text().strip()
-    archives = [
-        (dist / "claude/locron", dist / f"locron-claude-{version}.zip"),
-        (dist / "openclaw/locron", dist / f"locron-openclaw-{version}.zip"),
-        (dist / "codex/locron", dist / f"locron-codex-{version}.zip"),
-        (dist / "skill/locron", dist / f"locron-skill-{version}.zip"),
-    ]
-    for source, archive in archives:
-        _zip_tree(source, archive)
+        ]
+        claude_files = shared_skill + [
+            (Path(".claude-plugin/plugin.json"), (plugin_source / ".claude-plugin/plugin.json").read_bytes())
+        ]
+        codex_files = shared_skill + [
+            (Path(".codex-plugin/plugin.json"), (plugin_source / ".codex-plugin/plugin.json").read_bytes())
+        ]
+        _copy_payload(claude_files, dist / f"claude/{skill_name}")
+        _copy_payload(codex_files, dist / f"codex/{skill_name}")
+        openclaw_root = root / "platforms/openclaw" / skill_name
+        _copy_payload(
+            (
+                (path.relative_to(openclaw_root), path.read_bytes())
+                for path in sorted(openclaw_root.rglob("*"))
+                if path.is_file()
+            ),
+            dist / f"openclaw/{skill_name}",
+        )
+        authored_root = root / "skills" / skill_name
+        _copy_payload(
+            (
+                (path.relative_to(authored_root), path.read_bytes())
+                for path in sorted(authored_root.rglob("*"))
+                if path.is_file()
+            ),
+            dist / f"skill/{skill_name}",
+        )
+        archives.extend(
+            [
+                (dist / f"claude/{skill_name}", dist / f"{skill_name}-claude-{version}.zip", skill_name),
+                (dist / f"openclaw/{skill_name}", dist / f"{skill_name}-openclaw-{version}.zip", skill_name),
+                (dist / f"codex/{skill_name}", dist / f"{skill_name}-codex-{version}.zip", skill_name),
+                (dist / f"skill/{skill_name}", dist / f"{skill_name}-skill-{version}.zip", skill_name),
+            ]
+        )
+    for source, archive, skill_name in archives:
+        _zip_tree(source, archive, skill_name)
     checksum_lines = []
-    for _, archive in sorted(archives, key=lambda item: item[1].name):
+    for _, archive, _ in sorted(archives, key=lambda item: item[1].name):
         digest = hashlib.sha256(archive.read_bytes()).hexdigest()
         checksum_lines.append(f"{digest}  {archive.name}")
     (dist / "SHA256SUMS").write_text("\n".join(checksum_lines) + "\n", encoding="utf-8")
 
 
 def validate_dist(root: Path, dist: Path) -> None:
-    if (dist / ".locron-skill-dist").read_text(encoding="utf-8") != "generated by whitekiwi/skills\n":
+    if (dist / ".whitekiwi-skills-dist").read_text(encoding="utf-8") != "generated by whitekiwi/skills\n":
         raise ValidationError("dist marker is missing or invalid")
-    version = (root / "VERSION").read_text().strip()
+    version, catalog, _ = load_project(root)
     expected_names = {
-        f"locron-claude-{version}.zip",
-        f"locron-openclaw-{version}.zip",
-        f"locron-codex-{version}.zip",
-        f"locron-skill-{version}.zip",
+        f"{skill_name}-{platform}-{version}.zip"
+        for skill_name in catalog["skills"]
+        for platform in ("claude", "openclaw", "codex", "skill")
     }
     checksum_path = dist / "SHA256SUMS"
     entries: dict[str, str] = {}

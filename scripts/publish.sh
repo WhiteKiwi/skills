@@ -42,10 +42,7 @@ if gh release view "$tag" --repo whitekiwi/skills >/dev/null 2>&1; then
   printf 'GitHub Release %s already exists; leaving it unchanged\n' "$tag"
 else
   gh release create "$tag" \
-    "$repo_dir"/dist/locron-claude-*.zip \
-    "$repo_dir"/dist/locron-openclaw-*.zip \
-    "$repo_dir"/dist/locron-codex-*.zip \
-    "$repo_dir"/dist/locron-skill-*.zip \
+    "$repo_dir"/dist/*.zip \
     "$repo_dir/dist/SHA256SUMS" \
     --repo whitekiwi/skills \
     --verify-tag \

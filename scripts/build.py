@@ -8,7 +8,7 @@ from tooling import ValidationError, build, validate_dist
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Build deterministic Locron skill packages")
+    parser = argparse.ArgumentParser(description="Build deterministic WhiteKiwi skill packages")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--dist", type=Path)
     args = parser.parse_args()
@@ -20,7 +20,7 @@ def main() -> int:
     except (ValidationError, OSError, ValueError) as exc:
         print(f"build failed: {exc}")
         return 1
-    print(f"built Locron skill artifacts in {dist}")
+    print(f"built WhiteKiwi skill artifacts in {dist}")
     return 0
 
 

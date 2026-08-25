@@ -40,6 +40,31 @@ class TriggerContractTests(unittest.TestCase):
         for request in negative_requests:
             self.assertNotIn("locron", request.lower())
 
+    def test_pushman_description_routes_representative_requests(self) -> None:
+        text = (ROOT / "skills/pushman/SKILL.md").read_text(encoding="utf-8")
+        description = next(line for line in text.splitlines() if line.startswith("description: ")).removeprefix("description: ").lower()
+        for capability in ("send", "inspect", "diagnose", "iphone", "mcp", "pairing", "delivery"):
+            self.assertIn(capability, description)
+        self.assertIn("generic apns/fcm", description)
+        self.assertIn("unrelated notification services", description)
+
+        positive_requests = (
+            "Use Pushman to notify me when this finishes.",
+            "List my Pushman devices and monthly usage.",
+            "Why did this Pushman notification fail to deliver?",
+            "Pair the Pushman CLI with my iPhone.",
+            "Configure the local Pushman MCP server.",
+        )
+        negative_requests = (
+            "Implement APNs token registration in this iOS app.",
+            "Send this message through Pushover.",
+            "Explain Firebase Cloud Messaging topics.",
+        )
+        for request in positive_requests:
+            self.assertIn("pushman", request.lower())
+        for request in negative_requests:
+            self.assertNotIn("pushman", request.lower())
+
 
 class InstalledLocronForwardTest(unittest.TestCase):
     @unittest.skipUnless(shutil.which("locron"), "locron is not installed")
@@ -82,6 +107,70 @@ class InstalledLocronForwardTest(unittest.TestCase):
                 self.assertEqual(explained["data"]["job"]["name"], "skill-forward-test")
             removed = locron("remove", "skill-forward-test")
             self.assertEqual(removed["command"], "remove")
+
+
+class InstalledPushmanForwardTest(unittest.TestCase):
+    @unittest.skipUnless(shutil.which("pushman"), "pushman is not installed")
+    def test_version_help_and_mcp_discovery_do_not_send(self) -> None:
+        version = subprocess.run(
+            ["pushman", "version"], text=True, capture_output=True, check=True
+        )
+        self.assertIn("pushman ", version.stdout)
+        help_result = subprocess.run(
+            ["pushman", "help", "mcp"], text=True, capture_output=True, check=True
+        )
+        self.assertIn("Model Context Protocol", help_result.stdout)
+
+        process = subprocess.Popen(
+            ["pushman", "mcp"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        assert process.stdin is not None
+        assert process.stdout is not None
+        assert process.stderr is not None
+
+        def exchange(payload: dict) -> dict:
+            process.stdin.write(json.dumps(payload) + "\n")
+            process.stdin.flush()
+            return json.loads(process.stdout.readline())
+
+        initialized = exchange(
+            {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "initialize",
+                "params": {
+                    "protocolVersion": "2026-07-28",
+                    "capabilities": {},
+                    "clientInfo": {"name": "skills-forward-test", "version": "1"},
+                },
+            }
+        )
+        self.assertEqual(initialized["result"]["serverInfo"]["name"], "pushman")
+        process.stdin.write('{"jsonrpc":"2.0","method":"notifications/initialized"}\n')
+        process.stdin.flush()
+        listed = exchange({"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}})
+        tool_names = {tool["name"] for tool in listed["result"]["tools"]}
+        self.assertEqual(
+            tool_names,
+            {
+                "pushman_send_notification",
+                "pushman_list_devices",
+                "pushman_list_history",
+                "pushman_get_message",
+                "pushman_get_usage",
+                "pushman_get_status",
+                "pushman_doctor",
+            },
+        )
+        process.stdin.close()
+        self.assertEqual(process.wait(timeout=5), 0)
+        self.assertEqual(process.stderr.read(), "")
+        process.stdout.close()
+        process.stderr.close()
 
 
 if __name__ == "__main__":

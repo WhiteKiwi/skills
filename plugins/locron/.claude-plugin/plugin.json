@@ -1,6 +1,6 @@
 {
   "name": "locron",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Safely create, preview, inspect, run, update, remove, import, export, explain, diagnose, and manage the local dashboard for schedules managed by the Locron local-first job scheduler. Use when a request names Locron, asks to operate Locron jobs or runs, or needs an explanation of Locron status, history, logs, policies, daemon health, service state, or dashboard; do not use for generic cron syntax questions or unrelated task managers.",
   "author": {
     "name": "WhiteKiwi",

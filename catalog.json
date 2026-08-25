@@ -14,6 +14,19 @@
       "display_name": "Locron",
       "short_description": "Safely operate, explain, and diagnose Locron.",
       "category": "Productivity",
+      "homepage": "https://github.com/whitekiwi/locron",
+      "required_bins": [
+        "locron"
+      ],
+      "capabilities": [
+        "Scheduling",
+        "Diagnostics"
+      ],
+      "default_prompt": "Use $locron to explain why this Locron job did not run.",
+      "default_prompts": [
+        "Preview and safely create a Locron schedule.",
+        "Diagnose why a Locron job did not run."
+      ],
       "keywords": [
         "locron",
         "scheduler",
@@ -26,6 +39,40 @@
         "topics": [
           "scheduler",
           "local-first",
+          "automation"
+        ]
+      }
+    },
+    "pushman": {
+      "display_name": "Pushman",
+      "short_description": "Safely send and inspect Pushman notifications.",
+      "category": "Productivity",
+      "homepage": "https://github.com/WhiteKiwi/pushman-cli",
+      "required_bins": [
+        "pushman"
+      ],
+      "capabilities": [
+        "Notifications",
+        "Diagnostics"
+      ],
+      "default_prompt": "Use $pushman to send me a notification when this task finishes.",
+      "default_prompts": [
+        "Send a Pushman notification when this task finishes.",
+        "Inspect my Pushman devices and delivery status."
+      ],
+      "keywords": [
+        "pushman",
+        "notifications",
+        "iphone",
+        "automation",
+        "mcp"
+      ],
+      "clawhub": {
+        "slug": "pushman",
+        "name": "Pushman",
+        "topics": [
+          "notifications",
+          "iphone",
           "automation"
         ]
       }

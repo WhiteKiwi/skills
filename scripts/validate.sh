@@ -3,7 +3,7 @@ set -eu
 
 script_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 repo_dir=$(CDPATH='' cd -- "$script_dir/.." && pwd)
-scratch_dir=$(mktemp -d "${TMPDIR:-/tmp}/locron-skill-validate.XXXXXX")
+scratch_dir=$(mktemp -d "${TMPDIR:-/tmp}/whitekiwi-skills-validate.XXXXXX")
 trap 'rm -rf "$scratch_dir"' EXIT HUP INT TERM
 
 python3 -m unittest discover -s "$repo_dir/tests" -p 'test_*.py'
@@ -19,13 +19,17 @@ python3 "$repo_dir/scripts/build.py" --root "$repo_dir"
 python3 "$repo_dir/scripts/validate.py" --root "$repo_dir" --require-dist
 
 if command -v agentskills >/dev/null 2>&1; then
-  agentskills validate "$repo_dir/skills/locron"
+  for skill_dir in "$repo_dir"/skills/*; do
+    agentskills validate "$skill_dir"
+  done
 else
   printf '%s\n' 'note: skills-ref/agentskills not installed; repository validator remains authoritative'
 fi
 
 if command -v claude >/dev/null 2>&1; then
-  claude plugin validate "$repo_dir/plugins/locron" --strict
+  for plugin_dir in "$repo_dir"/plugins/*; do
+    claude plugin validate "$plugin_dir" --strict
+  done
   claude plugin validate "$repo_dir" --strict
 else
   printf '%s\n' 'note: Claude Code not installed; skipped additive validator'

@@ -42,6 +42,11 @@ class Fixture:
                             "display_name": "Locron",
                             "short_description": "Safely operate Locron schedules.",
                             "category": "Productivity",
+                            "homepage": "https://github.com/whitekiwi/locron",
+                            "required_bins": ["locron"],
+                            "capabilities": ["Scheduling", "Diagnostics"],
+                            "default_prompt": "Use $locron to explain why this Locron job did not run.",
+                            "default_prompts": ["Safely operate Locron."],
                             "keywords": ["locron"],
                             "clawhub": {"slug": "locron", "name": "Locron", "topics": ["scheduler"]},
                         }
@@ -62,6 +67,37 @@ class Fixture:
             '  display_name: "Locron"\n'
             '  short_description: "Safely operate Locron schedules."\n'
             '  default_prompt: "Use $locron to explain why this Locron job did not run."\n',
+            encoding="utf-8",
+        )
+
+    def add_pushman(self) -> None:
+        catalog = json.loads((self.root / "catalog.json").read_text(encoding="utf-8"))
+        catalog["skills"]["pushman"] = {
+            "display_name": "Pushman",
+            "short_description": "Safely operate Pushman notifications.",
+            "category": "Productivity",
+            "homepage": "https://github.com/whitekiwi/pushman-cli",
+            "required_bins": ["pushman"],
+            "capabilities": ["Notifications", "Diagnostics"],
+            "default_prompt": "Use $pushman to inspect Pushman status.",
+            "default_prompts": ["Inspect Pushman status."],
+            "keywords": ["pushman"],
+            "clawhub": {"slug": "pushman", "name": "Pushman", "topics": ["notifications"]},
+        }
+        (self.root / "catalog.json").write_text(
+            json.dumps(catalog) + "\n", encoding="utf-8"
+        )
+        skill = self.root / "skills/pushman"
+        (skill / "agents").mkdir(parents=True)
+        (skill / "SKILL.md").write_text(
+            "---\nname: pushman\ndescription: Operate Pushman safely when a user asks about Pushman notifications.\nlicense: MIT-0\n---\n\n# Pushman\n\nInspect first.\n",
+            encoding="utf-8",
+        )
+        (skill / "agents/openai.yaml").write_text(
+            "interface:\n"
+            '  display_name: "Pushman"\n'
+            '  short_description: "Safely operate Pushman notifications."\n'
+            '  default_prompt: "Use $pushman to inspect Pushman status."\n',
             encoding="utf-8",
         )
 
@@ -147,6 +183,25 @@ class BuildTests(unittest.TestCase):
                 self.assertFalse(any("/.codex-plugin/plugin.json" in name for name in names))
             with zipfile.ZipFile(first / f"locron-skill-{version}.zip") as archive:
                 self.assertFalse(any("plugin.json" in name for name in archive.namelist()))
+
+    def test_multiple_skills_generate_independent_packages_and_marketplace_entries(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            fixture = Fixture(Path(temp))
+            fixture.add_pushman()
+            dist = fixture.root / "dist"
+            build(fixture.root, dist)
+            validate_dist(fixture.root, dist)
+            version = (fixture.root / "VERSION").read_text().strip()
+            for skill_name in ("locron", "pushman"):
+                for platform in ("claude", "openclaw", "codex", "skill"):
+                    self.assertTrue((dist / f"{skill_name}-{platform}-{version}.zip").is_file())
+            marketplace = json.loads(
+                (fixture.root / ".agents/plugins/marketplace.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                {plugin["name"] for plugin in marketplace["plugins"]},
+                {"locron", "pushman"},
+            )
 
 
 if __name__ == "__main__":
