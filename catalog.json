@@ -47,7 +47,7 @@
       "display_name": "Pushman",
       "short_description": "Safely send and inspect Pushman notifications.",
       "category": "Productivity",
-      "homepage": "https://github.com/WhiteKiwi/pushman-cli",
+      "homepage": "https://github.com/pushmanhq/pushman-cli",
       "required_bins": [
         "pushman"
       ],

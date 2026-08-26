@@ -11,7 +11,7 @@ Use Pushman to deliver notifications to the user's own receiving iPhone devices 
 ## Discover the available surface
 
 1. Prefer connected tools named `pushman_send_notification`, `pushman_list_devices`, `pushman_list_history`, `pushman_get_message`, `pushman_get_usage`, `pushman_get_status`, and `pushman_doctor`. They use the locally configured Pushman CLI credential through `pushman mcp`.
-2. If those tools are unavailable, resolve `pushman` from `PATH`. If it is absent, report the prerequisite and point to the [Pushman CLI installation guide](https://github.com/WhiteKiwi/pushman-cli/blob/main/docs/INSTALL.md); do not invent an installation method or credential.
+2. If those tools are unavailable, resolve `pushman` from `PATH`. If it is absent, report the prerequisite and point to the [Pushman CLI installation guide](https://github.com/pushmanhq/pushman-cli/blob/main/docs/INSTALL.md); do not invent an installation method or credential.
 3. Run `pushman version`, then read `pushman help <command>` before composing an unfamiliar or version-sensitive fallback command. This skill requires Pushman 0.1.0 or newer.
 4. Do not manually exchange JSON-RPC frames when a client can connect the MCP server or the ordinary CLI can perform the task.
 

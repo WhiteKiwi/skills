@@ -11,7 +11,7 @@ Portable [Agent Skills](https://agentskills.io) for Claude Code, Codex and ChatG
 | Skill | What it does | Requires | Install name |
 |---|---|---|---|
 | [Locron](skills/locron/SKILL.md) | Safely operate and diagnose local schedules | [`locron`](https://github.com/WhiteKiwi/locron#installation) on `PATH` | `locron` |
-| [Pushman](skills/pushman/SKILL.md) | Safely send and inspect personal iPhone notifications | [`pushman`](https://github.com/WhiteKiwi/pushman-cli/blob/main/docs/INSTALL.md) on `PATH` | `pushman` |
+| [Pushman](skills/pushman/SKILL.md) | Safely send and inspect personal iPhone notifications | [`pushman`](https://github.com/pushmanhq/pushman-cli/blob/main/docs/INSTALL.md) on `PATH` | `pushman` |
 
 The marketplace is the catalog, not an all-in-one bundle. Adding it makes the entries discoverable; it does **not** install every plugin. Install one or both entries explicitly.
 
@@ -84,7 +84,7 @@ Read the authored workflow in [skills/locron/SKILL.md](skills/locron/SKILL.md) a
 
 ## Use the Pushman skill
 
-Install [Pushman CLI](https://github.com/WhiteKiwi/pushman-cli/blob/main/docs/INSTALL.md) 0.1.0 or newer, authorize it through a browser or the iPhone app, and optionally connect its local stdio MCP server:
+Install [Pushman CLI](https://github.com/pushmanhq/pushman-cli/blob/main/docs/INSTALL.md) 0.1.0 or newer, authorize it through a browser or the iPhone app, and optionally connect its local stdio MCP server:
 
 ```sh
 pushman login

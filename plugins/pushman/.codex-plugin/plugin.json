@@ -6,7 +6,7 @@
     "name": "WhiteKiwi",
     "url": "https://github.com/whitekiwi"
   },
-  "homepage": "https://github.com/WhiteKiwi/pushman-cli",
+  "homepage": "https://github.com/pushmanhq/pushman-cli",
   "repository": "https://github.com/whitekiwi/skills",
   "license": "MIT-0",
   "keywords": [
@@ -27,7 +27,7 @@
       "Notifications",
       "Diagnostics"
     ],
-    "websiteURL": "https://github.com/WhiteKiwi/pushman-cli",
+    "websiteURL": "https://github.com/pushmanhq/pushman-cli",
     "defaultPrompt": [
       "Send a Pushman notification when this task finishes.",
       "Inspect my Pushman devices and delivery status."

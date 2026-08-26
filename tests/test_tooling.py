@@ -76,7 +76,7 @@ class Fixture:
             "display_name": "Pushman",
             "short_description": "Safely operate Pushman notifications.",
             "category": "Productivity",
-            "homepage": "https://github.com/whitekiwi/pushman-cli",
+            "homepage": "https://github.com/pushmanhq/pushman-cli",
             "required_bins": ["pushman"],
             "capabilities": ["Notifications", "Diagnostics"],
             "default_prompt": "Use $pushman to inspect Pushman status.",
