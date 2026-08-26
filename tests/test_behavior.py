@@ -43,7 +43,7 @@ class TriggerContractTests(unittest.TestCase):
     def test_pushman_description_routes_representative_requests(self) -> None:
         text = (ROOT / "skills/pushman/SKILL.md").read_text(encoding="utf-8")
         description = next(line for line in text.splitlines() if line.startswith("description: ")).removeprefix("description: ").lower()
-        for capability in ("send", "inspect", "diagnose", "iphone", "mcp", "pairing", "delivery"):
+        for capability in ("send", "inspect", "diagnose", "iphone", "mcp", "login", "pairing", "authorization", "delivery"):
             self.assertIn(capability, description)
         self.assertIn("generic apns/fcm", description)
         self.assertIn("unrelated notification services", description)
@@ -52,6 +52,7 @@ class TriggerContractTests(unittest.TestCase):
             "Use Pushman to notify me when this finishes.",
             "List my Pushman devices and monthly usage.",
             "Why did this Pushman notification fail to deliver?",
+            "Log in to Pushman from this headless CLI.",
             "Pair the Pushman CLI with my iPhone.",
             "Configure the local Pushman MCP server.",
         )

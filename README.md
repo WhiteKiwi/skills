@@ -84,10 +84,11 @@ Read the authored workflow in [skills/locron/SKILL.md](skills/locron/SKILL.md) a
 
 ## Use the Pushman skill
 
-Install [Pushman CLI](https://github.com/WhiteKiwi/pushman-cli/blob/main/docs/INSTALL.md) 0.1.0-beta.4 or newer, pair it with the iPhone app, and optionally connect its local stdio MCP server:
+Install [Pushman CLI](https://github.com/WhiteKiwi/pushman-cli/blob/main/docs/INSTALL.md) 0.1.0-beta.5 or newer, authorize it through a browser or the iPhone app, and optionally connect its local stdio MCP server:
 
 ```sh
-pushman pair
+pushman login
+# or: pushman pair
 codex mcp add pushman -- pushman mcp
 ```
 

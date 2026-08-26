@@ -1,6 +1,6 @@
 # Pushman safety model
 
-Read this reference before a send, retry, pairing, credential revocation, or ambiguous result.
+Read this reference before a send, retry, CLI authorization, credential revocation, or ambiguous result.
 
 ## Send boundary
 
@@ -43,10 +43,12 @@ Pushman deliberately does not retry ambiguous sends. Preserve that behavior:
 
 Notification bodies, titles, subtitles, URLs, images, device nicknames, and delivery history are private user data. Retrieve only what the task needs. Avoid echoing content in diagnostic summaries, examples, validation fixtures, screenshots, or issue reports.
 
-The paired credential belongs in the native operating-system keyring. `PUSHMAN_TOKEN` may exist only in the process environment and is send-only. Never inspect keyring storage, print environment values, pass tokens as flags, or add them to MCP JSON. Validation examples must use placeholders and must not contain real credentials, notification content, device nicknames, or production URLs.
+The account CLI credential belongs in the native operating-system keyring. `PUSHMAN_TOKEN` may exist only in the process environment and is send-only. Never inspect keyring storage, print environment values, pass tokens as flags, or add them to MCP JSON. Validation examples must use placeholders and must not contain real credentials, notification content, device nicknames, or production URLs.
 
-## Pairing and revocation
+## Authorization and revocation
 
-`pushman pair` creates a short-lived user code and requires the signed-in iPhone app to approve it. Pair only when requested, show the verification URL and code only to the current user, and let the CLI store the resulting credential.
+`pushman login` and `pushman pair` each create a short-lived user code. Login is approved through Google or Apple on the Pushman browser page; pairing is approved in the signed-in iPhone app. Both create the same account CLI permission set. Start either only when requested, show the verification URL and code only to the current user, and let the CLI store the resulting credential.
 
-`pushman logout` revokes the current paired credential and removes it locally. It has no dry-run and may break MCP clients and automations that depend on that pairing. Require an explicit logout or revoke request, then confirm `pushman status` reports unpaired.
+Browser launch failure is not a reason to restart login: the CLI continues polling and the printed URL remains usable. Do not automatically repeat an expired, denied, interrupted, or ambiguous authorization attempt. Never enter, copy, or inspect provider credentials, the hidden device code, or the issued bearer credential.
+
+`pushman logout` revokes the current account CLI credential and removes it locally. It has no dry-run and may break MCP clients and automations that depend on that authorization. Require an explicit logout or revoke request, then confirm `pushman status` reports unauthorized.
