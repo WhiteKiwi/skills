@@ -16,7 +16,7 @@ class TriggerContractTests(unittest.TestCase):
     def test_description_routes_representative_requests(self) -> None:
         text = (ROOT / "skills/locron/SKILL.md").read_text(encoding="utf-8")
         description = next(line for line in text.splitlines() if line.startswith("description: ")).removeprefix("description: ").lower()
-        positive_capabilities = ("create", "preview", "inspect", "run", "explain", "diagnose", "history", "logs", "service", "dashboard")
+        positive_capabilities = ("create", "preview", "inspect", "run", "explain", "diagnose", "history", "logs", "service", "mcp", "self-update", "dashboard")
         for capability in positive_capabilities:
             self.assertIn(capability, description)
         self.assertIn("generic cron", description)
@@ -28,6 +28,8 @@ class TriggerContractTests(unittest.TestCase):
             "Why did this Locron run fail? Check its history and logs.",
             "Is the Locron daemon service healthy?",
             "Start my local Locron dashboard and show me how to authenticate.",
+            "Configure the local Locron MCP server for my client.",
+            "Self-update my standalone Locron installation.",
             "Dry-run an update to my Locron job.",
         )
         negative_requests = (
@@ -43,7 +45,7 @@ class TriggerContractTests(unittest.TestCase):
     def test_pushman_description_routes_representative_requests(self) -> None:
         text = (ROOT / "skills/pushman/SKILL.md").read_text(encoding="utf-8")
         description = next(line for line in text.splitlines() if line.startswith("description: ")).removeprefix("description: ").lower()
-        for capability in ("send", "inspect", "diagnose", "iphone", "mcp", "login", "pairing", "authorization", "delivery"):
+        for capability in ("send", "inspect", "diagnose", "iphone", "mcp", "login", "pairing", "authorization", "delivery", "self-update"):
             self.assertIn(capability, description)
         self.assertIn("generic apns/fcm", description)
         self.assertIn("unrelated notification services", description)
@@ -55,6 +57,7 @@ class TriggerContractTests(unittest.TestCase):
             "Log in to Pushman from this headless CLI.",
             "Pair the Pushman CLI with my iPhone.",
             "Configure the local Pushman MCP server.",
+            "Self-update my Homebrew-managed Pushman CLI.",
         )
         negative_requests = (
             "Implement APNs token registration in this iOS app.",

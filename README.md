@@ -78,13 +78,13 @@ The workflow follows four operating rules:
 - dry-run supported mutations, inspect the normalized result, then apply only when the request authorizes it;
 - finish mutations with an exact-target read-back and diagnoses with durable evidence.
 
-The workflow is tested through Locron 0.8.0. It uses `explain` for the preferred consolidated job report, `why --run` for the full immutable attempt and event trace, and the installed `dashboard` help surface for safe local dashboard lifecycle operations. It falls back to the capabilities exposed by older installed versions instead of assuming newer commands exist.
+The workflow is tested through Locron 0.9.2. It uses `explain` for the preferred consolidated job report, `why --run` for the full immutable attempt and event trace, and the installed `dashboard`, `mcp`, and `self-update` help surfaces for safe local operations. It falls back to the capabilities exposed by older installed versions instead of assuming newer commands exist.
 
 Read the authored workflow in [skills/locron/SKILL.md](skills/locron/SKILL.md) and its on-demand [safety reference](skills/locron/references/safety.md).
 
 ## Use the Pushman skill
 
-Install [Pushman CLI](https://github.com/pushmanhq/pushman-cli/blob/main/docs/INSTALL.md) 0.1.0 or newer, authorize it through a browser or the iPhone app, and optionally connect its local stdio MCP server:
+Install [Pushman CLI](https://github.com/pushmanhq/pushman-cli/blob/main/docs/INSTALL.md) 0.1.1 or newer, authorize it through a browser or the iPhone app, and optionally connect its local stdio MCP server:
 
 ```sh
 pushman login
@@ -98,7 +98,7 @@ Then ask the agent directly:
 Use the pushman skill to notify me when this task finishes.
 ```
 
-The workflow prefers typed MCP tools, falls back to the installed CLI, treats a direct exact-send request as authorization for one send, and never turns a draft or inspection request into a notification. It does not automatically retry ambiguous results because a retry can create a duplicate and consume quota.
+The workflow is tested through Pushman 0.1.1. It prefers typed MCP tools, falls back to stable CLI JSON for sends, treats a direct exact-send request as authorization for one send, and never turns a draft or inspection request into a notification. It does not automatically retry ambiguous results because a retry can create a duplicate and consume quota, and it keeps Homebrew self-update separate from notification and credential operations.
 
 Read the authored workflow in [skills/pushman/SKILL.md](skills/pushman/SKILL.md) and its on-demand [safety reference](skills/pushman/references/safety.md).
 

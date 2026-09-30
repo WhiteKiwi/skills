@@ -1,10 +1,10 @@
-# Locron 0.5–0.8 safety model
+# Locron 0.5–0.9 safety model
 
-Use this reference for operations whose consequences depend on mutation support, policy, or durable state. Confirm the installed help before using any command. The mutation boundaries below are verified through Locron 0.8.0; `explain` is available from 0.6.0 and the local dashboard from 0.8.0.
+Use this reference for operations whose consequences depend on mutation support, policy, or durable state. Confirm the installed help before using any command. The mutation boundaries below are verified through Locron 0.9.2; `explain` is available from 0.6.0, one-time automatic cleanup from 0.7.0, and the local dashboard from 0.8.0.
 
 ## Mutation boundary
 
-The following mutations support a non-mutating `--dry-run` in Locron 0.5.0 through 0.8.0:
+The following mutations support a non-mutating `--dry-run` in Locron 0.5.0 through 0.9.2:
 
 - `add`, `update`, and `run`
 - `import` and `prune`
@@ -18,15 +18,22 @@ The following operational mutations have no dry-run:
 - `cancel`
 - `service install` and `service uninstall`
 - `dashboard enable`, `dashboard disable`, and token rotation through `dashboard enable --reset`
+- `dashboard token` when the token is missing, because it creates the credential
+- `self-update`
 
 For these, read the exact target immediately before acting and require authorization in the current request. `cancel --acknowledge-unconfirmed` is a separate risk acceptance, not a routine retry flag.
 
-Dashboard token display is read-only but sensitive. Prefer `dashboard status` for ordinary inspection because it reports token presence and permission posture without the secret. Use `dashboard token` only when the user needs to authenticate locally, never put the token in a URL, and treat `dashboard enable --reset` as deliberate credential rotation that invalidates existing sessions. The dashboard is loopback-only by contract; proxying or tunnelling it changes the exposure boundary and is not an ordinary dashboard operation.
+Dashboard token display is sensitive and can create a missing token. Prefer `dashboard status` for ordinary inspection because it reports token presence and permission posture without the secret. Use `dashboard token` only when the user needs to authenticate locally, never put the token in a URL, and treat `dashboard enable --reset` as deliberate credential rotation that invalidates existing sessions. `dashboard disable` unregisters the service and removes the token, also invalidating sessions. The dashboard is loopback-only by contract; proxying or tunnelling it changes the exposure boundary and is not an ordinary dashboard operation.
+
+`self-update` is a networked atomic binary replacement, not a job-definition update. It requires explicit authorization and an eligible standalone-installer ownership receipt. Never bypass a refusal for a Homebrew, Cargo, package-manager, source, or manually copied installation. In 0.9.2, a successful replacement best-effort runs `service install` and refreshes an already registered dashboard service; this can create daemon registration or restart loaded services. Disclose those inseparable effects before running it, preserve service-refresh warnings, and read both service states back afterward.
+
+`locron mcp` is a long-lived stdio transport. Its management tools preserve the Locron mutation boundary: dry-run supported tools must be called with `dry_run: true` before an authorized real call. Starting the server does not register a daemon, open a network port, or prove that an MCP client is configured.
 
 ## Schedule and policy facts
 
 - A job has exactly one cron, interval, or one-time schedule.
 - Cron uses a `local` or IANA timezone. An interval uses a durable anchor. A one-time timestamp contains its own explicit offset.
+- `--delete-after-run` applies only to one-time jobs and soft-removes the definition after the scheduled run reaches a final outcome; retained history and captured output remain under normal retention. `--retain-after-run` reverses that policy on update.
 - A manual run does not move the schedule or its next occurrence.
 - Overlap policies are `skip`, `replace`, and `allow`. None bypasses global or per-job concurrency admission.
 - Missed-run policies are `skip`, `latest`, and bounded `all`. A start deadline may exclude old occurrences.

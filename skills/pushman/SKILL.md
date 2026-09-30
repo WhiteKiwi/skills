@@ -1,6 +1,6 @@
 ---
 name: pushman
-description: Safely send, inspect, and diagnose personal iPhone notifications through Pushman MCP tools or the installed Pushman CLI. Use when a request names Pushman, asks to notify the user from an agent or terminal workflow, targets Pushman devices, history, usage, login, pairing, authorization, or delivery diagnostics, or needs help configuring the local Pushman MCP server; do not use for implementing generic APNs/FCM push systems or operating unrelated notification services.
+description: Safely send, inspect, and diagnose personal iPhone notifications through Pushman MCP tools or the installed Pushman CLI, including authorization, local MCP integration, and eligible Homebrew self-updates. Use when a request names Pushman, asks to notify the user from an agent or terminal workflow, targets Pushman devices, history, usage, login, pairing, authorization, delivery diagnostics, MCP configuration, or CLI self-update; do not use for implementing generic APNs/FCM push systems or operating unrelated notification services.
 license: MIT-0
 ---
 
@@ -12,7 +12,7 @@ Use Pushman to deliver notifications to the user's own receiving iPhone devices 
 
 1. Prefer connected tools named `pushman_send_notification`, `pushman_list_devices`, `pushman_list_history`, `pushman_get_message`, `pushman_get_usage`, `pushman_get_status`, and `pushman_doctor`. They use the locally configured Pushman CLI credential through `pushman mcp`.
 2. If those tools are unavailable, resolve `pushman` from `PATH`. If it is absent, report the prerequisite and point to the [Pushman CLI installation guide](https://github.com/pushmanhq/pushman-cli/blob/main/docs/INSTALL.md); do not invent an installation method or credential.
-3. Run `pushman version`, then read `pushman help <command>` before composing an unfamiliar or version-sensitive fallback command. This skill requires Pushman 0.1.0 or newer.
+3. Run `pushman version`, then read `pushman help <command>` before composing an unfamiliar or version-sensitive fallback command. This skill is tested through Pushman 0.1.1 and can fall back to the capabilities exposed by an older installed version.
 4. Do not manually exchange JSON-RPC frames when a client can connect the MCP server or the ordinary CLI can perform the task.
 
 Use MCP for agent workflows because it publishes typed schemas, structured results, and safety annotations. Use the CLI for login, pairing, rename, logout, or when MCP is not connected.
@@ -32,7 +32,7 @@ Read [references/safety.md](references/safety.md) before sending, retrying, auth
 1. Preserve the user's content and scope. Do not invent a URL, image, target device, group, update key, or additional message text. Minor formatting that the user requested is allowed.
 2. If specific devices matter and were not named, use `pushman_list_devices` or `pushman devices` and let the user choose. Omitting devices targets every currently eligible receiver.
 3. Prefer `pushman_send_notification`. Provide only requested fields: required `body`, optional `title`, `subtitle`, `url`, `group`, HTTPS `image`, `sound` (`default` or `none`), `key`, `format` (`plain` or `monospace`), and `devices`.
-4. For CLI fallback, use `pushman push -` and write the body on stdin so notification content does not enter process arguments or shell history. Pass optional fields as separate flags after consulting installed help. Never interpolate content into shell syntax.
+4. For CLI fallback, use `pushman push - --json` and write the body on stdin so notification content does not enter process arguments or shell history. Pass optional fields as separate flags after consulting installed help, and validate the stable JSON result rather than parsing human confirmation text. Never interpolate content into shell syntax.
 5. Treat success only as server acceptance. Report the returned message ID and target-device count without claiming APNs delivery or that the user opened the notification.
 
 Do not retry a rate-limited, timed-out, interrupted, or otherwise ambiguous send automatically. A retry may create another notification and consume another monthly send. A keyed update is still an accepted send and consumes quota.
@@ -57,7 +57,15 @@ Read tools require an account CLI credential. `PUSHMAN_TOKEN` is process-scoped 
 - Never request, display, copy, persist, or inspect the native keyring credential.
 - Never place `PUSHMAN_TOKEN` in command arguments, source code, logs, chat, or checked-in MCP configuration.
 - `pushman rename` changes the authorized sender nickname and `pushman logout` revokes the credential. Perform either only when explicitly requested; verify with `pushman status` afterward.
-- To configure a local stdio client, use the installed client's supported MCP configuration with command `pushman` and arguments `mcp`. Do not expose the server over HTTP, a tunnel, or a public process supervisor.
+- To configure a local stdio client, use the installed client's supported MCP configuration with command `pushman` and arguments `mcp`. Prefer the resolved absolute executable path for desktop clients whose `PATH` may differ from the shell. Do not expose the server over HTTP, a tunnel, or a public process supervisor, and do not report integration as working until the client can initialize the server and list the seven expected Pushman tools.
+
+## Update the Pushman CLI
+
+Treat `self-update` as a package mutation with no dry-run, distinct from updating this skill or sending a keyed notification. Run it only when the user explicitly asks to update the Pushman CLI and `pushman self-update --help` exposes the command.
+
+Pushman 0.1.1 supports self-update only on macOS or Linux when the running executable resolves to the `whitekiwi/tap/pushman` Homebrew Formula. It verifies that ownership before invoking `brew upgrade whitekiwi/tap/pushman`; never bypass a refusal for a Go install, release archive, or other unowned executable. For those installations, consult the installed version's canonical installation guide and use the original channel only when the request authorizes it.
+
+Record `pushman version` before the update and read it back afterward. Preserve Homebrew output and failures without claiming that the version changed when the result is “already up to date.” Updating the binary does not authorize login, logout, credential access, MCP configuration changes, or a test notification.
 
 ## Finish with evidence
 

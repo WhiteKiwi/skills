@@ -1,6 +1,6 @@
 ---
 name: locron
-description: Safely create, preview, inspect, run, update, remove, import, export, explain, diagnose, and manage the local dashboard for schedules managed by the Locron local-first job scheduler. Use when a request names Locron, asks to operate Locron jobs or runs, or needs an explanation of Locron status, history, logs, policies, daemon health, service state, or dashboard; do not use for generic cron syntax questions or unrelated task managers.
+description: Safely create, preview, inspect, run, update, remove, import, export, explain, diagnose, serve MCP, update eligible installations, and manage the local dashboard for schedules managed by the Locron local-first job scheduler. Use when a request names Locron, asks to operate Locron jobs or runs, or needs an explanation of Locron status, history, logs, policies, daemon health, service state, MCP integration, self-update, or dashboard; do not use for generic cron syntax questions or unrelated task managers.
 license: MIT-0
 metadata:
   openclaw:
@@ -16,7 +16,7 @@ Operate the installed Locron CLI while preserving its validation, policy, and au
 ## Discover the installed surface
 
 1. Resolve `locron` from `PATH`. If it is absent, report that prerequisite instead of inventing an installation or command surface.
-2. Run `locron --version --format json` and require a successful `locron.cli/v1` envelope. State the detected version when compatibility matters. This workflow is tested against Locron 0.8.0 and can use an older installed surface when a newer command is absent.
+2. Run `locron --version --format json` and require a successful `locron.cli/v1` envelope. State the detected version when compatibility matters. This workflow is tested through Locron 0.9.2 and can use an older installed surface when a newer command is absent.
 3. Before composing an unfamiliar or version-sensitive command, read `locron help <command>` and any nested subcommand help. The installed help overrides examples or assumptions in this skill.
 4. Prefer `--format json` for reads and decisions. Validate `schema`, `ok`, `command`, `data`, and `warnings`; do not parse human prose when JSON is available. Use human output only when the user asks to see it.
 
@@ -42,6 +42,8 @@ Read [references/safety.md](references/safety.md) before a mutation, import/expo
 
 Do not enable a job merely because it was previewed. Do not replace a direct target with a shell string for convenience.
 
+For a one-time schedule, add `--delete-after-run` only when the user wants the job definition soft-removed after its scheduled run reaches a final outcome. Explain that retained history and captured output remain subject to normal retention. Use `--retain-after-run` on update only to reverse that policy; neither flag belongs on cron or interval schedules.
+
 ## Run or change operational state
 
 - Manual run: inspect the job, run `run <job> --dry-run --format json`, and explain the admission decision. Queue the real run only when requested. Use `--wait` only when the user wants completion/output rather than a durable queue acknowledgement.
@@ -50,6 +52,7 @@ Do not enable a job merely because it was previewed. Do not replace a direct tar
 - Prune: run `prune --dry-run --format json` before authorized deletion, then report the durable counts.
 - Configuration: read current settings first. Dry-run supported `config set` and `config unset` mutations before applying them. Do not echo configured secret values.
 - Service install/uninstall: check `service status` first. These alter per-user service registration and have no dry-run; perform only when explicitly requested. Do not substitute package-manager service commands unless installed help says Locron refuses its own registration and the user authorizes that alternative.
+- Foreground daemon: use `daemon run` only when the user asks for an interactive foreground scheduler. Keep the process lifecycle explicit; do not present it as persistent service registration.
 
 ## Manage the local dashboard
 
@@ -57,8 +60,20 @@ Use dashboard commands only when `locron help dashboard` exposes them. The dashb
 
 - Inspect `dashboard status --format json` before changing its service registration. Report registration, loaded state, URL, and token-file posture without retrieving or exposing the token.
 - Run foreground `dashboard` or `dashboard serve` only when the user asks to start an interactive local session. Return its exact printed loopback URL and keep the process lifecycle explicit.
-- Treat `dashboard enable`, `dashboard disable`, and `dashboard enable --reset` as service mutations without dry-run. Require current authorization, inspect status first, and read status back afterward. `--reset` rotates the access token and invalidates existing dashboard sessions; never add it merely to repair or restart the service.
-- Run `dashboard token` only when the user explicitly needs the secret for local authentication. Do not place the token in URLs, command logs, durable notes, or messages to third parties, and do not claim that `dashboard status` reveals it.
+- Treat `dashboard enable`, `dashboard disable`, and `dashboard enable --reset` as service mutations without dry-run. Require current authorization, inspect status first, and read status back afterward. `--reset` rotates the access token and invalidates existing dashboard sessions; `disable` removes the token and also invalidates sessions. Never add `--reset` merely to repair or restart the service.
+- Run `dashboard token` only when the user explicitly needs the secret for local authentication. It can create a missing token, so do not classify it as a purely observational read. Do not place the token in URLs, command logs, durable notes, or messages to third parties, and do not claim that `dashboard status` reveals it.
+
+## Integrate through MCP
+
+Use MCP only when `locron help mcp` exposes it. `locron mcp` is a long-lived stdio server, not a daemon or network listener; normally configure an MCP client to launch it instead of starting it as an unattended shell process. Use the absolute executable path when the client may not inherit the interactive shell `PATH`.
+
+Prefer the MCP server's typed tools when they are already connected. Apply the same authorization boundary as the CLI: inspect first, set `dry_run: true` for every supported mutation, review the normalized result, and make the real tool call only when the request authorizes it. Closing stdin ends a directly launched server; do not report client integration as working until the client can initialize it and list its Locron tools or resources.
+
+## Update Locron itself
+
+Treat `self-update` as a distinct, networked binary replacement with no dry-run, never as part of an ordinary job `update`. Run it only when the user explicitly asks to update Locron and installed help exposes the command. It is supported only for an eligible standalone-installer-owned binary; Homebrew, Cargo, source, package-manager, and manually copied installations must use their owning installation channel. Do not work around an ownership refusal.
+
+Before updating, record the current version and inspect daemon and dashboard registration. Make the installed release's post-update behavior explicit: in 0.9.2, success best-effort runs `service install`, which can create or refresh daemon registration and restart a loaded service, and refreshes an already registered dashboard service. If the user authorizes only binary replacement and not those service effects, do not run `self-update`; it has no switch to suppress them. After success, read back the version plus daemon and dashboard status, preserve warnings, and do not perform an additional restart unless separately requested.
 
 ## Diagnose and explain
 

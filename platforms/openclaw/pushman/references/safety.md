@@ -1,6 +1,6 @@
 # Pushman safety model
 
-Read this reference before a send, retry, CLI authorization, credential revocation, or ambiguous result.
+Read this reference before a send, retry, CLI authorization, credential revocation, self-update, or ambiguous result.
 
 ## Send boundary
 
@@ -52,3 +52,9 @@ The account CLI credential belongs in the native operating-system keyring. `PUSH
 Browser launch failure is not a reason to restart login: the CLI continues polling and the printed URL remains usable. Do not automatically repeat an expired, denied, interrupted, or ambiguous authorization attempt. Never enter, copy, or inspect provider credentials, the hidden device code, or the issued bearer credential.
 
 `pushman logout` revokes the current account CLI credential and removes it locally. It has no dry-run and may break MCP clients and automations that depend on that authorization. Require an explicit logout or revoke request, then confirm `pushman status` reports unauthorized.
+
+## CLI update boundary
+
+`pushman self-update` has no dry-run and invokes Homebrew to upgrade `whitekiwi/tap/pushman` after verifying that the running executable belongs to that Formula. A request to update a notification by key, update this skill, inspect the version, or check for updates is not authorization to mutate the installed CLI.
+
+Run self-update only for an explicit Pushman CLI update request on the supported Homebrew-owned surface. Do not bypass ownership refusal or substitute a different installation channel without authorization. Verify the resulting version; an already-current result is successful observation with no version change. Binary updates do not authorize credential, MCP-client, account, or notification mutations.
