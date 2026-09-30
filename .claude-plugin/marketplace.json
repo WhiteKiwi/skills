@@ -9,16 +9,22 @@
   },
   "plugins": [
     {
+      "name": "design-guidelines",
+      "source": "./plugins/design-guidelines",
+      "description": "Create and audit reusable product design guidelines.",
+      "version": "0.6.0"
+    },
+    {
       "name": "locron",
       "source": "./plugins/locron",
       "description": "Safely operate, explain, and diagnose Locron.",
-      "version": "0.5.0"
+      "version": "0.6.0"
     },
     {
       "name": "pushman",
       "source": "./plugins/pushman",
       "description": "Safely send and inspect Pushman notifications.",
-      "version": "0.5.0"
+      "version": "0.6.0"
     }
   ]
 }

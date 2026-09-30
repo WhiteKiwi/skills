@@ -10,10 +10,11 @@ Portable [Agent Skills](https://agentskills.io) for Claude Code, Codex and ChatG
 
 | Skill | What it does | Requires | Install name |
 |---|---|---|---|
+| [Design Guidelines](skills/design-guidelines/SKILL.md) | Create, audit, and implement reusable brand and product guidelines | Node.js for the bundled contrast checker | `design-guidelines` |
 | [Locron](skills/locron/SKILL.md) | Safely operate and diagnose local schedules | [`locron`](https://github.com/WhiteKiwi/locron#installation) on `PATH` | `locron` |
 | [Pushman](skills/pushman/SKILL.md) | Safely send and inspect personal iPhone notifications | [`pushman`](https://github.com/pushmanhq/pushman-cli/blob/main/docs/INSTALL.md) on `PATH` | `pushman` |
 
-The marketplace is the catalog, not an all-in-one bundle. Adding it makes the entries discoverable; it does **not** install every plugin. Install one or both entries explicitly.
+The marketplace is the catalog, not an all-in-one bundle. Adding it makes the entries discoverable; it does **not** install every plugin. Install the individual entries you need.
 
 ## Install only what you need
 
@@ -31,6 +32,8 @@ Then choose a plugin:
 claude plugin install locron@whitekiwi-skills
 # or
 claude plugin install pushman@whitekiwi-skills
+# or
+claude plugin install design-guidelines@whitekiwi-skills
 ```
 
 ### Codex and ChatGPT
@@ -47,9 +50,11 @@ Then choose a plugin:
 codex plugin add locron@whitekiwi-skills
 # or
 codex plugin add pushman@whitekiwi-skills
+# or
+codex plugin add design-guidelines@whitekiwi-skills
 ```
 
-Codex CLI uses `plugin add` for installation. The same catalog is available in the ChatGPT desktop Plugins directory after registration, where Locron and Pushman remain separate install choices.
+Codex CLI uses `plugin add` for installation. The same catalog is available in the ChatGPT desktop Plugins directory after registration, where each workflow remains a separate install choice.
 
 ### OpenClaw
 
@@ -59,9 +64,34 @@ Install a skill directly by its owner-qualified ClawHub reference:
 openclaw skills install @whitekiwi/locron
 # or
 openclaw skills install @whitekiwi/pushman
+# or
+openclaw skills install @whitekiwi/design-guidelines
 ```
 
-The owner-qualified ClawHub reference is the supported registry path. Review the current registry scan before installing. For local development, use the generated payload described below.
+The owner-qualified ClawHub reference is the supported registry path. Registry installs require a published ClawHub version; a repository push alone does not publish a new entry. Review the current registry scan before installing. Before publication or for local development, use the generated payload described below.
+
+## Use the Design Guidelines skill
+
+Ask for the outcome you need:
+
+```text
+Use the design-guidelines skill to create a brand and product guideline for this app.
+Use the design-guidelines skill to audit this product's themes and interaction states.
+Use the design-guidelines skill to implement the approved guideline in these components.
+```
+
+The workflow combines guideline creation, visual audits, and authorized implementation in one portable skill. It connects research to product decisions, separates proposed choices from verified implementation, and covers semantic tokens, typography, layout, themes, states, motion, and visual QA. Supporting references provide a canonical deliverable template, an audit format, accessibility requirements and exceptions, and guidance for agent-built interfaces.
+
+The bundled checker needs Node.js and accepts opaque sRGB hex pairs. From the installed skill directory:
+
+```sh
+node scripts/contrast-check.mjs '#171717:#C6FF4A'
+node scripts/contrast-check.mjs --min 4.5 --json '#171717:#C6FF4A'
+```
+
+Report mode measures without failing on low contrast. `--min` enables a gate for the chosen use; exit codes are 0 for a successful report or passing gate, 1 for a missed threshold, and 2 for invalid input. JSON preserves the full ratio. This checks color pairs, not complete WCAG conformance; alpha, CSS tokens, OKLCH, and P3 require separate resolution or measurement.
+
+Read the authored workflow in [skills/design-guidelines/SKILL.md](skills/design-guidelines/SKILL.md). It consolidates the earlier local `create-design-guideline` and `design-guidelines` workflows under one public name.
 
 ## Use the Locron skill
 
@@ -108,20 +138,24 @@ Read the authored workflow in [skills/pushman/SKILL.md](skills/pushman/SKILL.md)
 
 ```sh
 claude plugin marketplace update whitekiwi-skills
+claude plugin update design-guidelines@whitekiwi-skills
 claude plugin update locron@whitekiwi-skills
 claude plugin update pushman@whitekiwi-skills
 claude plugin uninstall locron@whitekiwi-skills
 claude plugin uninstall pushman@whitekiwi-skills
+claude plugin uninstall design-guidelines@whitekiwi-skills
 ```
 
 ### Codex and ChatGPT
 
 ```sh
 codex plugin marketplace upgrade whitekiwi-skills
+codex plugin remove design-guidelines@whitekiwi-skills
 codex plugin remove locron@whitekiwi-skills
 codex plugin remove pushman@whitekiwi-skills
 codex plugin add locron@whitekiwi-skills
 codex plugin add pushman@whitekiwi-skills
+codex plugin add design-guidelines@whitekiwi-skills
 ```
 
 Remove the catalog itself only when it is no longer needed:
@@ -135,6 +169,7 @@ codex plugin marketplace remove whitekiwi-skills
 ```sh
 openclaw skills update @whitekiwi/locron
 openclaw skills update @whitekiwi/pushman
+openclaw skills update @whitekiwi/design-guidelines
 ```
 
 The current native OpenClaw CLI does not expose `skills uninstall`. The standalone `clawhub uninstall` command applies to installations tracked by the standalone ClawHub CLI, not automatically to native OpenClaw-managed installations.
@@ -149,7 +184,7 @@ The install boundary is a plugin, not the entire repository. WhiteKiwi publishes
 | Codex and ChatGPT | Git-backed plugin marketplace | `.codex-plugin/plugin.json` and `agents/openai.yaml` |
 | OpenClaw | ClawHub Agent Skill | `metadata.openclaw.requires.bins` |
 
-Each `skills/<name>/` directory is an authored workflow. Its generated `plugins/<name>/` package contains only that workflow, so installing `locron` does not install `pushman`, and vice versa. `scripts/build.sh` produces every adapter from those sources, injects only platform-specific metadata, and rejects generated drift. Release archives are deterministic and include checksums.
+Each `skills/<name>/` directory is an authored workflow. Its generated `plugins/<name>/` package contains only that workflow. `scripts/build.sh` produces every adapter from those sources, injects only platform-specific metadata, preserves executable helpers, and rejects generated drift. Release archives are deterministic and include checksums.
 
 ## Local development
 
@@ -168,6 +203,7 @@ claude plugin marketplace add .
 codex plugin marketplace add .
 openclaw skills install ./platforms/openclaw/locron --as locron
 openclaw skills install ./platforms/openclaw/pushman --as pushman
+openclaw skills install ./platforms/openclaw/design-guidelines --as design-guidelines
 ```
 
 Build all generated payloads and reproducible release archives:

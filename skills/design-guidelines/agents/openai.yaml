@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Guidelines"
+  short_description: "Create and audit reusable product design guidelines."
+  default_prompt: "Use $design-guidelines to create or audit a reusable design guideline for this product."

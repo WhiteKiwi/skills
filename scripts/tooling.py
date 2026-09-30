@@ -291,6 +291,10 @@ def _source_files(root: Path, skill_name: str) -> dict[Path, bytes]:
     return files
 
 
+def _payload_mode(path: Path) -> int:
+    return 0o755 if path.stat().st_mode & stat.S_IXUSR else 0o644
+
+
 def _openclaw_skill(source: bytes, required_bins: list[str]) -> bytes:
     text = source.decode("utf-8")
     end = text.find("\n---\n", 4)
@@ -451,6 +455,11 @@ def validate_generated(root: Path) -> None:
         }
         if source != generated_skill:
             raise ValidationError(f"generated {skill_name} plugin is not byte-equivalent to authored source")
+        for relative in source:
+            source_mode = _payload_mode(root / "skills" / skill_name / relative)
+            for payload_root in (generated_root, root / "platforms/openclaw" / skill_name):
+                if _payload_mode(payload_root / relative) != source_mode:
+                    raise ValidationError(f"generated executable mode drift: {payload_root / relative}")
         _, source_body, _ = parse_frontmatter(root / f"skills/{skill_name}/SKILL.md")
         _, claw_body, _ = parse_frontmatter(root / f"platforms/openclaw/{skill_name}/SKILL.md")
         if source_body != claw_body:
@@ -473,13 +482,28 @@ def write_generated(root: Path) -> None:
         target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(content)
+        target.chmod(0o644)
+
+    catalog = load_json(root / "catalog.json")
+    for skill_name in sorted(catalog["skills"]):
+        source_root = root / "skills" / skill_name
+        for source in sorted(source_root.rglob("*")):
+            if source.is_file():
+                relative = source.relative_to(source_root)
+                mode = _payload_mode(source)
+                for payload_root in (
+                    root / "plugins" / skill_name / "skills" / skill_name,
+                    root / "platforms/openclaw" / skill_name,
+                ):
+                    (payload_root / relative).chmod(mode)
 
 
-def _copy_payload(source_files: Iterable[tuple[Path, bytes]], destination: Path) -> None:
-    for relative, content in source_files:
+def _copy_payload(source_files: Iterable[tuple[Path, Path]], destination: Path) -> None:
+    for relative, source in source_files:
         target = destination / relative
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(content)
+        shutil.copyfile(source, target)
+        target.chmod(_payload_mode(source))
 
 
 def _zip_tree(source: Path, archive: Path, root_name: str) -> None:
@@ -514,22 +538,22 @@ def build(root: Path, dist: Path) -> None:
         plugin_source = root / "plugins" / skill_name
         generated_skill = plugin_source / "skills" / skill_name
         shared_skill = [
-            (path.relative_to(plugin_source), path.read_bytes())
+            (path.relative_to(plugin_source), path)
             for path in sorted(generated_skill.rglob("*"))
             if path.is_file()
         ]
         claude_files = shared_skill + [
-            (Path(".claude-plugin/plugin.json"), (plugin_source / ".claude-plugin/plugin.json").read_bytes())
+            (Path(".claude-plugin/plugin.json"), plugin_source / ".claude-plugin/plugin.json")
         ]
         codex_files = shared_skill + [
-            (Path(".codex-plugin/plugin.json"), (plugin_source / ".codex-plugin/plugin.json").read_bytes())
+            (Path(".codex-plugin/plugin.json"), plugin_source / ".codex-plugin/plugin.json")
         ]
         _copy_payload(claude_files, dist / f"claude/{skill_name}")
         _copy_payload(codex_files, dist / f"codex/{skill_name}")
         openclaw_root = root / "platforms/openclaw" / skill_name
         _copy_payload(
             (
-                (path.relative_to(openclaw_root), path.read_bytes())
+                (path.relative_to(openclaw_root), path)
                 for path in sorted(openclaw_root.rglob("*"))
                 if path.is_file()
             ),
@@ -538,7 +562,7 @@ def build(root: Path, dist: Path) -> None:
         authored_root = root / "skills" / skill_name
         _copy_payload(
             (
-                (path.relative_to(authored_root), path.read_bytes())
+                (path.relative_to(authored_root), path)
                 for path in sorted(authored_root.rglob("*"))
                 if path.is_file()
             ),

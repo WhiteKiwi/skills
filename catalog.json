@@ -10,6 +10,40 @@
     "display_name": "WhiteKiwi Skills"
   },
   "skills": {
+    "design-guidelines": {
+      "display_name": "Design Guidelines",
+      "short_description": "Create and audit reusable product design guidelines.",
+      "category": "Design",
+      "homepage": "https://github.com/WhiteKiwi/skills/tree/main/skills/design-guidelines",
+      "required_bins": [
+        "node"
+      ],
+      "capabilities": [
+        "Design Guidelines",
+        "Visual Audits"
+      ],
+      "default_prompt": "Use $design-guidelines to create or audit a reusable design guideline for this product.",
+      "default_prompts": [
+        "Create a reusable brand and product design guideline.",
+        "Audit the product's tokens, themes, and interaction states."
+      ],
+      "keywords": [
+        "design",
+        "guidelines",
+        "tokens",
+        "themes",
+        "accessibility"
+      ],
+      "clawhub": {
+        "slug": "design-guidelines",
+        "name": "Design Guidelines",
+        "topics": [
+          "design",
+          "design-system",
+          "accessibility"
+        ]
+      }
+    },
     "locron": {
       "display_name": "Locron",
       "short_description": "Safely operate, explain, and diagnose Locron.",

@@ -5,6 +5,18 @@
   },
   "plugins": [
     {
+      "name": "design-guidelines",
+      "source": {
+        "source": "local",
+        "path": "./plugins/design-guidelines"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Design"
+    },
+    {
       "name": "locron",
       "source": {
         "source": "local",

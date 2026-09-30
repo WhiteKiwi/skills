@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -165,6 +166,41 @@ class ValidationFailureTests(unittest.TestCase):
 
 
 class BuildTests(unittest.TestCase):
+    @unittest.skipUnless(os.name == "posix", "direct executable payload check requires POSIX")
+    def test_helpers_remain_executable_in_generated_payloads_and_archives(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            fixture = Fixture(Path(temp))
+            script = fixture.root / "skills/locron/scripts/helper.sh"
+            script.parent.mkdir()
+            script.write_text("#!/bin/sh\nprintf '%s\\n' 'payload works'\n", encoding="utf-8")
+            script.chmod(0o755)
+            with fixture.skill.open("a", encoding="utf-8") as output:
+                output.write("Run `scripts/helper.sh`.\n")
+            dist = fixture.root / "dist"
+            build(fixture.root, dist)
+            validate_dist(fixture.root, dist)
+            payloads = [
+                fixture.root / "plugins/locron/skills/locron",
+                fixture.root / "platforms/openclaw/locron",
+                dist / "claude/locron/skills/locron",
+                dist / "codex/locron/skills/locron",
+                dist / "openclaw/locron",
+                dist / "skill/locron",
+            ]
+            for payload in payloads:
+                with self.subTest(payload=payload):
+                    result = subprocess.run(
+                        [str(payload / "scripts/helper.sh")],
+                        capture_output=True, text=True, check=True, timeout=5,
+                    )
+                    self.assertEqual(result.stdout, "payload works\n")
+                    self.assertEqual((payload / "SKILL.md").stat().st_mode & 0o777, 0o644)
+            for platform in ("claude", "codex", "openclaw", "skill"):
+                with zipfile.ZipFile(dist / f"locron-{platform}-0.1.0.zip") as archive:
+                    member = next(info for info in archive.infolist() if info.filename.endswith("/scripts/helper.sh"))
+                    self.assertEqual((member.external_attr >> 16) & 0o777, 0o755)
+                    self.assertEqual(archive.read(member), script.read_bytes())
+
     def test_two_builds_are_byte_identical_and_platform_specific(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             fixture = Fixture(Path(temp))

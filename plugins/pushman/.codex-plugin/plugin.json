@@ -1,6 +1,6 @@
 {
   "name": "pushman",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Safely send, inspect, and diagnose personal iPhone notifications through Pushman MCP tools or the installed Pushman CLI, including authorization, local MCP integration, and eligible Homebrew self-updates. Use when a request names Pushman, asks to notify the user from an agent or terminal workflow, targets Pushman devices, history, usage, login, pairing, authorization, delivery diagnostics, MCP configuration, or CLI self-update; do not use for implementing generic APNs/FCM push systems or operating unrelated notification services.",
   "author": {
     "name": "WhiteKiwi",
