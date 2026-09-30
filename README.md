@@ -1,7 +1,7 @@
 # WhiteKiwi Skills
 
 [![Validate](https://github.com/WhiteKiwi/skills/actions/workflows/validate.yml/badge.svg)](https://github.com/WhiteKiwi/skills/actions/workflows/validate.yml)
-[![Latest release](https://img.shields.io/github/v/release/WhiteKiwi/skills)](https://github.com/WhiteKiwi/skills/releases/latest)
+[![Releases](https://img.shields.io/badge/releases-per--skill-blue)](https://github.com/WhiteKiwi/skills/releases)
 [![License: MIT-0](https://img.shields.io/badge/license-MIT--0-blue.svg)](LICENSE)
 
 Portable [Agent Skills](https://agentskills.io) for Claude Code, Codex and ChatGPT, and OpenClaw. Each workflow is published as a separately installable plugin or skill, so you can install only what you need.
@@ -186,6 +186,8 @@ The install boundary is a plugin, not the entire repository. WhiteKiwi publishes
 
 Each `skills/<name>/` directory is an authored workflow. Its generated `plugins/<name>/` package contains only that workflow. `scripts/build.sh` produces every adapter from those sources, injects only platform-specific metadata, preserves executable helpers, and rejects generated drift. Release archives are deterministic and include checksums.
 
+Each skill has an independent semantic version in `catalog.json` at `skills.<name>.version`. Its Claude/Codex manifests, Claude marketplace entry, ZIP names, and ClawHub publication all use that version. Updating Locron leaves the Design Guidelines and Pushman versions and archives unchanged. The migration preserves `0.6.0` as the starting version of all three skills; future bumps apply only to the changed skill.
+
 ## Local development
 
 Clone and validate the repository:
@@ -223,10 +225,13 @@ dist/
 ├── <skill>-openclaw-<version>.zip
 ├── <skill>-codex-<version>.zip
 ├── <skill>-skill-<version>.zip
+├── <skill>-SHA256SUMS
 └── SHA256SUMS
 ```
 
 Each `<skill>-skill-<version>.zip` contains only that portable skill. These archives are release and API convenience artifacts, not documented ChatGPT installation ZIPs.
+
+`SHA256SUMS` covers the complete local build. Each `<skill>-SHA256SUMS` covers only that skill's four ZIPs and is attached to its release.
 
 ## Repository layout
 
@@ -236,31 +241,46 @@ plugins/<name>/                        generated, independently installable plug
 .claude-plugin/marketplace.json        generated catalog of Claude plugins
 .agents/plugins/marketplace.json       generated catalog of Codex/ChatGPT plugins
 platforms/openclaw/<name>/             generated OpenClaw skills
-catalog.json                           catalog and packaging metadata
+catalog.json                           per-skill versions and packaging metadata
 scripts/                               deterministic build, validation, release
 tests/                                 trigger, packaging, and behavior tests
 .github/workflows/                     validation and tagged release
 ```
 
-Do not edit generated files directly. Change `skills/<name>/`, `catalog.json`, or `VERSION`, then run `./scripts/build.sh`.
+Do not edit generated files directly. Change `skills/<name>/` or `catalog.json`, then run `./scripts/build.sh`.
 
 ## Release
 
-Maintainers update `VERSION`, rebuild, validate, and create the matching tag:
+Update only the changed skill's `version` in `catalog.json`, rebuild, validate, and commit the source and generated metadata. For example, after bumping Locron to `0.6.1`:
 
 ```sh
-./scripts/publish.sh --dry-run
-git tag "v$(cat VERSION)"
-git push origin main --tags
+./scripts/build.sh
+./scripts/publish.sh --dry-run --skill locron
+# Commit the source and generated metadata before tagging.
+git push origin main
+git tag locron-v0.6.1
+git push origin locron-v0.6.1
 ```
 
-The `v*` workflow verifies that the tag matches `VERSION`, creates an idempotent GitHub Release, and attaches every ZIP plus `SHA256SUMS`. When `CLAWHUB_TOKEN` is configured, it also publishes the generated OpenClaw payload with the same explicit version.
+The `*-v*` workflow requires an exact `<skill>-v<version>` match in the tagged catalog and verifies that the tag points to the checked-out commit. It creates an idempotent GitHub Release containing only that skill's four ZIPs and `<skill>-SHA256SUMS`. When `CLAWHUB_TOKEN` is configured, it also publishes only that skill's generated OpenClaw payload with its catalog version. Different skills can have release tags on the same commit.
+
+Legacy repository-wide `v*` tags and releases remain available as historical snapshots. New releases use per-skill tags; there is no shared `VERSION` file.
+
+To rerun a tagged release locally:
+
+```sh
+./scripts/publish.sh --release --tag locron-v0.6.1
+```
 
 For an authenticated manual ClawHub publication:
 
 ```sh
-./scripts/publish.sh --clawhub
+./scripts/publish.sh --clawhub --skill locron
 ```
+
+Publication requires an explicit skill or release tag. `./scripts/publish.sh --dry-run` may still validate all entries, using each skill's own version, without publishing them.
+
+Dry-runs can review uncommitted changes. Actual publication requires a clean committed working tree so the published payload corresponds to the repository state.
 
 ## References
 

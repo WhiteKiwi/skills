@@ -14,12 +14,18 @@ from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
 
 
-SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
+SEMVER_RE = re.compile(
+    r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)"
+    r"(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)"
+    r"(?:\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?"
+    r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?"
+)
 NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 LINK_RE = re.compile(r"(?<!!)\[[^\]]*\]\(([^)]+)\)")
 SCRIPT_REF_RE = re.compile(r"(?<![A-Za-z0-9_.-])(scripts/[A-Za-z0-9_./-]+)")
 MAX_CLAWHUB_BYTES = 50 * 1024 * 1024
 ZIP_TIME = (1980, 1, 1, 0, 0, 0)
+PLATFORMS = ("claude", "codex", "openclaw", "skill")
 
 GENERATED_ROOTS = (Path("plugins"), Path("platforms/openclaw"))
 GENERATED_FILES = (
@@ -212,14 +218,7 @@ def _validate_skill_tree(
     return metadata
 
 
-def load_project(root: Path) -> tuple[str, dict[str, Any], dict[str, dict[str, Any]]]:
-    version_path = root / "VERSION"
-    try:
-        version = version_path.read_text(encoding="utf-8").strip()
-    except FileNotFoundError as exc:
-        raise ValidationError("missing VERSION") from exc
-    if not SEMVER_RE.fullmatch(version):
-        raise ValidationError(f"VERSION is not semantic versioning: {version!r}")
+def load_project(root: Path) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
     catalog = load_json(root / "catalog.json")
     required_catalog = {"schema", "repository", "publisher", "marketplace", "skills"}
     if not isinstance(catalog, dict) or not required_catalog.issubset(catalog):
@@ -239,6 +238,7 @@ def load_project(root: Path) -> tuple[str, dict[str, Any], dict[str, dict[str, A
         )
     skill_metadata: dict[str, dict[str, Any]] = {}
     required_info = {
+        "version",
         "display_name",
         "short_description",
         "category",
@@ -255,6 +255,9 @@ def load_project(root: Path) -> tuple[str, dict[str, Any], dict[str, dict[str, A
             raise ValidationError(f"catalog metadata is incomplete for skill {skill_name!r}")
         if not NAME_RE.fullmatch(skill_name):
             raise ValidationError(f"invalid catalog skill name: {skill_name!r}")
+        version = info["version"]
+        if not isinstance(version, str) or not SEMVER_RE.fullmatch(version):
+            raise ValidationError(f"catalog version is not semantic versioning for {skill_name}: {version!r}")
         if not isinstance(info["required_bins"], list) or not info["required_bins"]:
             raise ValidationError(f"required_bins must be a non-empty list for {skill_name}")
         if not isinstance(info["capabilities"], list) or not info["capabilities"]:
@@ -279,7 +282,26 @@ def load_project(root: Path) -> tuple[str, dict[str, Any], dict[str, dict[str, A
     for script in sorted((root / "scripts").iterdir()):
         if script.is_file() and script.suffix in {".py", ".sh"} and not os.access(script, os.X_OK):
             raise ValidationError(f"repository script is not executable: {script.relative_to(root)}")
-    return version, catalog, skill_metadata
+    return catalog, skill_metadata
+
+
+def select_skills(catalog: dict[str, Any], skill_name: str | None) -> list[str]:
+    if skill_name is None:
+        return sorted(catalog["skills"])
+    if skill_name not in catalog["skills"]:
+        raise ValidationError(f"unknown catalog skill: {skill_name!r}")
+    return [skill_name]
+
+
+def skill_for_tag(catalog: dict[str, Any], tag: str) -> str:
+    for skill_name, info in catalog["skills"].items():
+        if tag == f"{skill_name}-v{info['version']}":
+            return skill_name
+    raise ValidationError(f"release tag must match <skill>-v<version> in catalog.json: {tag!r}")
+
+
+def archive_names(skill_name: str, version: str) -> list[str]:
+    return [f"{skill_name}-{platform}-{version}.zip" for platform in PLATFORMS]
 
 
 def _source_files(root: Path, skill_name: str) -> dict[Path, bytes]:
@@ -306,7 +328,7 @@ def _openclaw_skill(source: bytes, required_bins: list[str]) -> bytes:
 
 
 def expected_generated(root: Path) -> dict[Path, bytes]:
-    version, catalog, skill_metadata = load_project(root)
+    catalog, skill_metadata = load_project(root)
     publisher = catalog["publisher"]
     repository = catalog["repository"]
     result: dict[Path, bytes] = {}
@@ -314,6 +336,7 @@ def expected_generated(root: Path) -> dict[Path, bytes]:
     codex_plugins = []
     for skill_name, metadata in sorted(skill_metadata.items()):
         info = catalog["skills"][skill_name]
+        version = info["version"]
         description = metadata["description"]
         claude_plugin = {
             "name": skill_name,
@@ -403,8 +426,9 @@ def validate_generated(root: Path) -> None:
         if (root / relative).read_bytes() != content:
             raise ValidationError(f"generated file drift: {relative}; run ./scripts/build.sh")
 
-    version, catalog, metadata = load_project(root)
+    catalog, metadata = load_project(root)
     for skill_name in sorted(metadata):
+        version = catalog["skills"][skill_name]["version"]
         for manifest_path in (
             root / f"plugins/{skill_name}/.claude-plugin/plugin.json",
             root / f"plugins/{skill_name}/.codex-plugin/plugin.json",
@@ -532,9 +556,10 @@ def build(root: Path, dist: Path) -> None:
     dist.mkdir(parents=True)
     (dist / marker_name).write_text("generated by whitekiwi/skills\n", encoding="utf-8")
 
-    version, catalog, _ = load_project(root)
+    catalog, _ = load_project(root)
     archives: list[tuple[Path, Path, str]] = []
     for skill_name in sorted(catalog["skills"]):
+        version = catalog["skills"][skill_name]["version"]
         plugin_source = root / "plugins" / skill_name
         generated_skill = plugin_source / "skills" / skill_name
         shared_skill = [
@@ -583,16 +608,20 @@ def build(root: Path, dist: Path) -> None:
         digest = hashlib.sha256(archive.read_bytes()).hexdigest()
         checksum_lines.append(f"{digest}  {archive.name}")
     (dist / "SHA256SUMS").write_text("\n".join(checksum_lines) + "\n", encoding="utf-8")
+    for skill_name, info in sorted(catalog["skills"].items()):
+        names = set(archive_names(skill_name, info["version"]))
+        lines = [line for line in checksum_lines if line.split("  ", 1)[1] in names]
+        (dist / f"{skill_name}-SHA256SUMS").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def validate_dist(root: Path, dist: Path) -> None:
     if (dist / ".whitekiwi-skills-dist").read_text(encoding="utf-8") != "generated by whitekiwi/skills\n":
         raise ValidationError("dist marker is missing or invalid")
-    version, catalog, _ = load_project(root)
+    catalog, _ = load_project(root)
     expected_names = {
-        f"{skill_name}-{platform}-{version}.zip"
-        for skill_name in catalog["skills"]
-        for platform in ("claude", "openclaw", "codex", "skill")
+        name
+        for skill_name, info in catalog["skills"].items()
+        for name in archive_names(skill_name, info["version"])
     }
     checksum_path = dist / "SHA256SUMS"
     entries: dict[str, str] = {}
@@ -601,6 +630,11 @@ def validate_dist(root: Path, dist: Path) -> None:
         entries[name] = digest
     if set(entries) != expected_names:
         raise ValidationError("SHA256SUMS does not list exactly the release archives")
+    for skill_name, info in catalog["skills"].items():
+        names = sorted(archive_names(skill_name, info["version"]))
+        expected = "".join(f"{entries[name]}  {name}\n" for name in names)
+        if (dist / f"{skill_name}-SHA256SUMS").read_text(encoding="utf-8") != expected:
+            raise ValidationError(f"skill checksums differ from release archives: {skill_name}")
     for name, digest in entries.items():
         actual = hashlib.sha256((dist / name).read_bytes()).hexdigest()
         if actual != digest:

@@ -29,7 +29,6 @@ class Fixture:
         self.root = parent / "repo"
         (self.root / "skills/locron").mkdir(parents=True)
         (self.root / "scripts").mkdir()
-        (self.root / "VERSION").write_text("0.1.0\n", encoding="utf-8")
         (self.root / "LICENSE").write_text("MIT No Attribution\n", encoding="utf-8")
         (self.root / "catalog.json").write_text(
             json.dumps(
@@ -40,6 +39,7 @@ class Fixture:
                     "marketplace": {"name": "whitekiwi-skills", "display_name": "WhiteKiwi Skills"},
                     "skills": {
                         "locron": {
+                            "version": "0.1.0",
                             "display_name": "Locron",
                             "short_description": "Safely operate Locron schedules.",
                             "category": "Productivity",
@@ -74,6 +74,7 @@ class Fixture:
     def add_pushman(self) -> None:
         catalog = json.loads((self.root / "catalog.json").read_text(encoding="utf-8"))
         catalog["skills"]["pushman"] = {
+            "version": "0.3.0",
             "display_name": "Pushman",
             "short_description": "Safely operate Pushman notifications.",
             "category": "Productivity",
@@ -101,6 +102,12 @@ class Fixture:
             '  default_prompt: "Use $pushman to inspect Pushman status."\n',
             encoding="utf-8",
         )
+
+    def set_version(self, skill_name: str, version: object) -> None:
+        path = self.root / "catalog.json"
+        catalog = json.loads(path.read_text(encoding="utf-8"))
+        catalog["skills"][skill_name]["version"] = version
+        path.write_text(json.dumps(catalog) + "\n", encoding="utf-8")
 
 
 class ValidationFailureTests(unittest.TestCase):
@@ -152,9 +159,35 @@ class ValidationFailureTests(unittest.TestCase):
 
     def test_version_manifest_mismatch_is_generated_drift(self) -> None:
         build(self.fixture.root, self.fixture.root / "dist")
-        (self.fixture.root / "VERSION").write_text("0.2.0\n", encoding="utf-8")
+        self.fixture.set_version("locron", "0.2.0")
         with self.assertRaisesRegex(ValidationError, "generated file drift"):
             validate_generated(self.fixture.root)
+
+    def test_missing_skill_version_fails(self) -> None:
+        path = self.fixture.root / "catalog.json"
+        catalog = json.loads(path.read_text(encoding="utf-8"))
+        del catalog["skills"]["locron"]["version"]
+        path.write_text(json.dumps(catalog), encoding="utf-8")
+        self.assert_failure("catalog metadata is incomplete for skill 'locron'")
+
+    def test_invalid_skill_versions_fail(self) -> None:
+        for version in (None, 1, "", "v1.2.3", "1.2", "01.2.3", "1.2.3-01", "1.2.3-a..b", "1.2.3+"):
+            with self.subTest(version=version):
+                self.fixture.set_version("locron", version)
+                self.assert_failure("catalog version is not semantic versioning for locron")
+
+    def test_prerelease_and_build_metadata_are_supported(self) -> None:
+        self.fixture.set_version("locron", "1.2.3-rc.1+build.001")
+        build(self.fixture.root, self.fixture.root / "dist")
+        validate_dist(self.fixture.root, self.fixture.root / "dist")
+
+    def test_skill_checksum_cannot_include_another_skill(self) -> None:
+        self.fixture.add_pushman()
+        dist = self.fixture.root / "dist"
+        build(self.fixture.root, dist)
+        (dist / "locron-SHA256SUMS").write_bytes((dist / "SHA256SUMS").read_bytes())
+        with self.assertRaisesRegex(ValidationError, "skill checksums differ.*locron"):
+            validate_dist(self.fixture.root, dist)
 
     def test_build_refuses_to_replace_unmarked_directory(self) -> None:
         dist = self.fixture.root / "dist"
@@ -212,7 +245,8 @@ class BuildTests(unittest.TestCase):
             second_files = {path.relative_to(second): path.read_bytes() for path in second.rglob("*") if path.is_file()}
             self.assertEqual(first_files, second_files)
             validate_dist(fixture.root, first)
-            version = (fixture.root / "VERSION").read_text().strip()
+            catalog, _ = load_project(fixture.root)
+            version = catalog["skills"]["locron"]["version"]
             with zipfile.ZipFile(first / f"locron-claude-{version}.zip") as archive:
                 names = archive.namelist()
                 self.assertTrue(any("/.claude-plugin/plugin.json" in name for name in names))
@@ -227,10 +261,14 @@ class BuildTests(unittest.TestCase):
             dist = fixture.root / "dist"
             build(fixture.root, dist)
             validate_dist(fixture.root, dist)
-            version = (fixture.root / "VERSION").read_text().strip()
-            for skill_name in ("locron", "pushman"):
+            catalog, _ = load_project(fixture.root)
+            for skill_name, info in catalog["skills"].items():
+                version = info["version"]
                 for platform in ("claude", "openclaw", "codex", "skill"):
                     self.assertTrue((dist / f"{skill_name}-{platform}-{version}.zip").is_file())
+                for platform in ("claude", "codex"):
+                    manifest = json.loads((fixture.root / f"plugins/{skill_name}/.{platform}-plugin/plugin.json").read_text())
+                    self.assertEqual(manifest["version"], version)
             marketplace = json.loads(
                 (fixture.root / ".agents/plugins/marketplace.json").read_text(encoding="utf-8")
             )
@@ -238,6 +276,39 @@ class BuildTests(unittest.TestCase):
                 {plugin["name"] for plugin in marketplace["plugins"]},
                 {"locron", "pushman"},
             )
+            claude_marketplace = json.loads((fixture.root / ".claude-plugin/marketplace.json").read_text())
+            self.assertEqual(
+                {plugin["name"]: plugin["version"] for plugin in claude_marketplace["plugins"]},
+                {"locron": "0.1.0", "pushman": "0.3.0"},
+            )
+
+    def test_bumping_one_skill_keeps_other_skill_payloads_and_archives_identical(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            fixture = Fixture(Path(temp))
+            fixture.add_pushman()
+            first = fixture.root / "first"
+            second = fixture.root / "second"
+            build(fixture.root, first)
+            plugin = fixture.root / "plugins/pushman"
+            original_plugin = {path.relative_to(plugin): path.read_bytes() for path in plugin.rglob("*") if path.is_file()}
+            original_market = json.loads((fixture.root / ".claude-plugin/marketplace.json").read_text())
+            fixture.set_version("locron", "0.2.0")
+            build(fixture.root, second)
+            validate_dist(fixture.root, second)
+            self.assertEqual(
+                original_plugin,
+                {path.relative_to(plugin): path.read_bytes() for path in plugin.rglob("*") if path.is_file()},
+            )
+            for platform in ("claude", "codex", "openclaw", "skill"):
+                name = f"pushman-{platform}-0.3.0.zip"
+                self.assertEqual((first / name).read_bytes(), (second / name).read_bytes())
+                self.assertTrue((second / f"locron-{platform}-0.2.0.zip").is_file())
+                self.assertFalse((second / f"locron-{platform}-0.1.0.zip").exists())
+            self.assertEqual((first / "pushman-SHA256SUMS").read_bytes(), (second / "pushman-SHA256SUMS").read_bytes())
+            updated_market = json.loads((fixture.root / ".claude-plugin/marketplace.json").read_text())
+            original_entry = next(item for item in original_market["plugins"] if item["name"] == "pushman")
+            updated_entry = next(item for item in updated_market["plugins"] if item["name"] == "pushman")
+            self.assertEqual(original_entry, updated_entry)
 
 
 if __name__ == "__main__":

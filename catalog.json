@@ -11,6 +11,7 @@
   },
   "skills": {
     "design-guidelines": {
+      "version": "0.6.0",
       "display_name": "Design Guidelines",
       "short_description": "Create and audit reusable product design guidelines.",
       "category": "Design",
@@ -45,6 +46,7 @@
       }
     },
     "locron": {
+      "version": "0.6.0",
       "display_name": "Locron",
       "short_description": "Safely operate, explain, and diagnose Locron.",
       "category": "Productivity",
@@ -78,6 +80,7 @@
       }
     },
     "pushman": {
+      "version": "0.6.0",
       "display_name": "Pushman",
       "short_description": "Safely send and inspect Pushman notifications.",
       "category": "Productivity",

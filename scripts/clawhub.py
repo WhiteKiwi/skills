@@ -4,30 +4,39 @@
 from __future__ import annotations
 
 import argparse
-import json
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
+from tooling import ValidationError, load_project, select_skills, validate_generated
 
-def main() -> int:
+
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--dry-run", action="store_true")
     mode.add_argument("--publish", action="store_true")
+    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
+    parser.add_argument("--skill", help="catalog skill to select; required for publication")
     parser.add_argument("--version")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+    if args.publish and not args.skill:
+        parser.error("--publish requires --skill")
+    if args.version and not args.skill:
+        parser.error("--version requires --skill")
 
-    root = Path(__file__).resolve().parents[1]
-    catalog = json.loads((root / "catalog.json").read_text(encoding="utf-8"))
-    repository_version = (root / "VERSION").read_text(encoding="utf-8").strip()
-    version = args.version or repository_version
-    if version != repository_version:
-        raise SystemExit(f"requested ClawHub version {version} != VERSION {repository_version}")
+    root = args.root.resolve()
+    catalog, _ = load_project(root)
+    selected = select_skills(catalog, args.skill)
+    if args.version and args.version != catalog["skills"][args.skill]["version"]:
+        raise ValidationError(f"requested ClawHub version differs from catalog version for {args.skill}")
+    validate_generated(root)
     executable = shutil.which("clawhub")
     if executable is None:
-        raise SystemExit("clawhub is not installed")
-    for skill_name, info in sorted(catalog["skills"].items()):
+        raise ValidationError("clawhub is not installed")
+    for skill_name in selected:
+        info = catalog["skills"][skill_name]
         clawhub = info["clawhub"]
         command = [
             executable,
@@ -39,7 +48,7 @@ def main() -> int:
             "--name",
             clawhub["name"],
             "--version",
-            version,
+            info["version"],
             "--categories",
             info["category"].lower(),
             "--topics",
@@ -54,4 +63,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except (ValidationError, OSError) as exc:
+        print(f"ClawHub publication failed: {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc
