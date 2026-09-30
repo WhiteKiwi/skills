@@ -47,6 +47,8 @@ Do not create scale steps without a known job.
 
 ## 6. Semantic theme map
 
+Include only supported themes; adapt the columns for single-theme or fixed-theme products.
+
 | Role | Light value | Dark value | Contract |
 | --- | --- | --- | --- |
 | `canvas` | token | token | page background |
@@ -71,6 +73,8 @@ List known forbidden pairs directly. For alpha colors, record the background and
 Evaluate thresholds using the full ratio. A rounded display value is presentation, and verification is separate from approval or implementation.
 
 ## 8. Interaction state matrix
+
+Include rows only for supported themes and states.
 
 | Family and theme | Rest | Hover | Active/selected | Focus-visible | Disabled |
 | --- | --- | --- | --- | --- | --- |
@@ -97,12 +101,12 @@ Repeat for links, controls, cards, navigation, and inputs only when they exist. 
 
 ## Release checklist
 
-- representative page in light and dark
-- 320–390 px mobile and normal desktop
+- representative pages in supported light, dark, or fixed themes
+- narrowest supported viewport and typical wide viewport; web reflow at 320 CSS px where applicable
 - hover, keyboard focus, active/selected, disabled, error, and success states when present
-- longest realistic English, Korean/non-Latin, and URL strings
+- longest realistic text and URLs in the supported languages, including non-Latin wrapping when relevant
 - reduced motion
 - print/PDF/social/export surfaces when present
 - contrast measurement and rendered visual inspection
 - build and static checks proportional to risk
-- guideline status matches reality
+- guideline status matches reality, with unrendered or unmeasured proposals explicitly unverified

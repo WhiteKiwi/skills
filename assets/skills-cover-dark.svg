@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 430" role="img" aria-labelledby="title desc">
+  <title id="title">WhiteKiwi Skills — Clear intent. Useful skills.</title>
+  <desc id="desc">PIP editorial cover: a quiet neutral canvas, large typography, and one kiwi headline.</desc>
+  <rect width="1280" height="430" fill="#0E100E"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#F1F4EB">
+    <text x="48" y="53" font-family="monospace" font-size="18" letter-spacing="2">WHITEKIWI / SKILLS</text>
+    <text x="48" y="188" font-size="104" font-weight="700" letter-spacing="-5">CLEAR INTENT.</text>
+    <text x="48" y="291" fill="#C6FF4A" font-size="104" font-weight="700" letter-spacing="-5">USEFUL SKILLS.</text>
+    <path d="M48 355H1232" stroke="#F1F4EB" stroke-opacity=".28"/>
+    <g fill="#A5AB9F" font-family="monospace" font-size="17" letter-spacing="1">
+      <text x="48" y="395">01 / DESIGN</text>
+      <text x="466" y="395">02 / AUTOMATION</text>
+      <text x="960" y="395">PIP / WHITEKIWI</text>
+    </g>
+  </g>
+</svg>

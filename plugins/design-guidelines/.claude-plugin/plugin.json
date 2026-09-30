@@ -1,6 +1,6 @@
 {
   "name": "design-guidelines",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Create, audit, or implement reusable brand and product design guidelines with semantic tokens, themes, interaction states, and visual verification. Use when a user wants a visual system, brand guide, palette rules, or systematic design cleanup; do not use for a one-off cosmetic CSS change.",
   "author": {
     "name": "WhiteKiwi",

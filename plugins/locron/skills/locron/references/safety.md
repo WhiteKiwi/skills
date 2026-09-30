@@ -29,6 +29,10 @@ Dashboard token display is sensitive and can create a missing token. Prefer `das
 
 `locron mcp` is a long-lived stdio transport. Its management tools preserve the Locron mutation boundary: dry-run supported tools must be called with `dry_run: true` before an authorized real call. Starting the server does not register a daemon, open a network port, or prove that an MCP client is configured.
 
+## Ambiguous mutation results
+
+A timeout, interrupted client, or lost response may occur after a mutation is durable. Inspect the exact target with `show`, `history`, or `why --run` as applicable before another real call. In particular, do not submit another `run` to recover a lost queue acknowledgement, and do not infer that stopping `run --wait` cancelled the target. Use a returned canonical run ID when available; if the run cannot be identified reliably, report the uncertainty and ask before risking duplicate execution. Repeat an authorized mutation only when evidence establishes that the original was not applied or that repetition cannot broaden its effects.
+
 ## Schedule and policy facts
 
 - A job has exactly one cron, interval, or one-time schedule.

@@ -54,7 +54,7 @@ Then define only the visual dimensions the product needs:
 - motion density, duration families, entry behavior, and reduced motion
 - voice, labeling, and content hierarchy when they affect the interface
 
-When agents will implement the system, also create or update a concise repository-local `DESIGN.md`. Record atmosphere, semantic roles, component states, responsive art direction, anti-patterns, and release checks. Use taste dials such as design variance, motion intensity, and visual density when they clarify product decisions. Keep detailed rationale in the canonical human-facing guideline.
+When an agent-facing implementation contract is part of the requested deliverable, update the repository's existing design contract; create `DESIGN.md` only if no canonical equivalent exists. Record atmosphere, semantic roles, component states, responsive art direction, anti-patterns, and release checks. Use taste dials such as design variance, motion intensity, and visual density when they clarify product decisions. Keep detailed rationale in the canonical human-facing guideline. A documentation-only request does not imply repository edits.
 
 For responsive web products, preserve the established URL and content architecture while allowing distinct composition. Classify each mobile section as `preserve`, `recompose`, `collapse`, or `defer`; keep essential information and actions available in each supported viewport.
 
@@ -74,7 +74,7 @@ Define jobs before values:
 6. brand field, brand boundary, and on-brand content
 7. success, warning, error, and information
 
-Build primitives only for jobs that exist. Author palette relationships in OKLCH or another perceptually uniform space, then record stable sRGB hex fallbacks. Do not generate a ramp by changing HSL lightness alone.
+Build primitives only for jobs that exist. For new or revised palettes, author relationships in OKLCH or another suitable perceptual space and record stable sRGB hex fallbacks. Preserve an established palette or token format unless the requested change requires revising it. Do not generate a ramp by changing HSL lightness alone.
 
 Bright brand colors often require separate tokens for a signal field, soft surface, focus/boundary, and accessible text. Never assume one brand hex can perform every job. Keep the brand hue separate from semantic success or warning roles.
 
@@ -85,7 +85,7 @@ Approve foreground/background pairs, not isolated swatches:
 - translucent colors: check the composited result on every supported background
 - essential meaning: add text, shape, or icon instead of relying on color alone
 
-Map semantic roles independently in light and dark themes. Preserve hierarchy rather than identical values. Define rest, hover, active/selected, focus-visible, and disabled states on every relevant background.
+Map semantic roles independently in each supported theme, including fixed-theme scenes. Do not introduce a light or dark theme merely to fill a template. Preserve hierarchy rather than identical values. Define rest, hover, active/selected, focus-visible, and disabled states on every relevant background.
 
 From this skill's directory, measure or gate opaque sRGB pairs:
 
@@ -124,11 +124,11 @@ If implementation is requested:
 
 Inspect representative rendered pages rather than the guideline page alone:
 
-- light and dark themes
-- 320–390 px mobile and a normal desktop width
+- supported light, dark, or fixed themes
+- the narrowest supported viewport and a typical wide viewport; for web products, check reflow at 320 CSS px where applicable
 - rest, hover, active/selected, keyboard focus, disabled, error, and success states that exist
 - longest realistic headings, paragraphs, URLs, and Korean or other non-Latin wrapping when relevant
 - reduced motion
 - print, PDF, social preview, or export surfaces when present
 
-Check visual hierarchy, accent area, unwanted hue casts in neutrals, local contrast, and whether decoration competes with content. Run the product's build and static checks in proportion to risk. Record unresolved choices explicitly instead of freezing them by accident.
+Check visual hierarchy, accent area, unwanted hue casts in neutrals, local contrast, and whether decoration competes with content. Run the product's build and static checks in proportion to risk. For documentation-only work, record these as adoption checks where no implementation exists. If rendering or measurement is unavailable, identify what remains unverified. Record unresolved choices explicitly instead of freezing them by accident.

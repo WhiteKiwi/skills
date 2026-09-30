@@ -6,7 +6,7 @@ Read this reference before a send, retry, CLI authorization, credential revocati
 
 `pushman_send_notification` and `pushman push` contact the hosted Pushman service, consume one accepted-send allowance, and may create a visible iPhone notification. They are not read-only or idempotent. The operation is additive rather than destructive, but an accidental duplicate is still user-visible and quota-consuming.
 
-Treat these requests as current authorization for one exact send:
+Treat these requests as current authorization for one send within the stated content, purpose, and receiving scope:
 
 - “Push me when this finishes.”
 - “Send the notification body I just provided.”
@@ -19,12 +19,12 @@ These requests do not authorize a send:
 - “Configure Pushman for this project.”
 - “Check whether my devices are available.”
 
-When authorization is absent, show the material proposed fields and wait. When it is already present, proceed once without forcing a second confirmation.
+For a task-completion request without supplied text, compose a concise factual completion body; do not append logs, secrets, unrelated progress, or an invented URL. When authorization is absent, show the material proposed fields and wait. When it is already present, proceed once without forcing a second confirmation.
 
 ## Targeting and update semantics
 
 - Omitted devices mean every eligible receiving device, not a preview or no-op.
-- A named device is a nickname resolved by the hosted account. Inspect devices when the requested target is ambiguous; never guess from prior sessions.
+- A named device is a nickname resolved by the hosted account. Inspect devices when the requested target is ambiguous; never guess from prior sessions. If it cannot be resolved, ask rather than omitting the selector and broadcasting to every receiver.
 - A send without a key creates a new logical notification.
 - A reused key updates the matching logical notification for that sender. Do not invent or silently reuse a key.
 - A keyed update still consumes one accepted-send allowance.

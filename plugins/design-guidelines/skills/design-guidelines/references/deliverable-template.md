@@ -71,7 +71,7 @@ Define what each supported viewport preserves, recomposes, collapses, or defers.
 
 ## Adoption and governance
 
-Identify the canonical document and, when relevant, its concise `DESIGN.md` implementation contract. Record migration order, exception policy, change authority, unresolved choices, and the next validation step. Mark values implemented only after application and verification. Respect approval already granted for the requested scope.
+Identify the canonical document and, when in scope, the repository's implementation contract (for example, `DESIGN.md`). Record migration order, exception policy, change authority, unresolved choices, and the next validation step. Mark values implemented only after application and verification. Respect approval already granted for the requested scope.
 
 ## Release checks
 

@@ -50,13 +50,13 @@ Write a concise brand thesis and a few operating principles that resolve recurri
 - motion and reduced-motion behavior
 - voice and labeling when they affect the interface
 
-Explain why each rule serves the product. Do not turn one site's aesthetic or a passing preference into a universal constraint. When agents will implement the system, maintain a concise repository-local `DESIGN.md` with the execution rules; keep detailed rationale in the canonical guideline.
+Explain why each rule serves the product. Do not turn one site's aesthetic or a passing preference into a universal constraint. When an agent-facing implementation contract is in scope, maintain the repository's existing design contract, or create `DESIGN.md` if no canonical equivalent exists. Keep detailed rationale in the canonical guideline. A documentation-only request does not imply repository edits.
 
 ## Design color as role contracts
 
 Define jobs before values: canvas, raised surfaces, text hierarchy, boundaries, interactive content, focus, brand fields and their foregrounds, and semantic status. Build primitive scales only for jobs that exist. Separate bright brand fields from accessible text and focus colors when one value cannot do every job. Brand identity and success, warning, error, or information remain distinct roles.
 
-Author palette relationships in OKLCH or another suitable perceptual space and record sRGB fallbacks. Map roles independently for supported themes. Define rest, hover, active/selected, focus-visible, and disabled states on the backgrounds where each component appears.
+For new or revised palettes, author relationships in OKLCH or another suitable perceptual space and record sRGB fallbacks. Preserve an established palette or token format unless the requested change requires revising it. Map roles independently for supported themes. Define rest, hover, active/selected, focus-visible, and disabled states on the backgrounds where each component appears.
 
 Approve foreground/background pairs using the requirements and exceptions in the color reference. A contrast result checks that pair, not the interface's complete accessibility. Composite translucent colors against their actual backgrounds before measuring them.
 

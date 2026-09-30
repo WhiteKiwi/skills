@@ -4,7 +4,7 @@ Read this when a guideline steers agent-built interfaces, component registry ado
 
 ## Keep a concise execution contract
 
-Maintain a repository-local `DESIGN.md` when implementation agents need stable rules. Record atmosphere, semantic roles, important component states, responsive behavior, motion, product-specific anti-patterns, and release checks. Link the canonical human-facing guideline for rationale instead of duplicating it.
+When an agent-facing contract is in scope, update the repository's existing design contract; create `DESIGN.md` only if no canonical equivalent exists. Record atmosphere, semantic roles, important component states, responsive behavior, motion, product-specific anti-patterns, and release checks. Link the canonical human-facing guideline for rationale instead of duplicating it. Do not create repository files for a documentation-only or audit-only request unless they are part of the requested output.
 
 When useful, describe design variance, motion intensity, and visual density explicitly. Tie each choice to the product and viewport; do not import another skill's default settings without a reason.
 

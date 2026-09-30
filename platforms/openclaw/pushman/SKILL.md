@@ -17,7 +17,7 @@ Use Pushman to deliver notifications to the user's own receiving iPhone devices 
 
 1. Prefer connected tools named `pushman_send_notification`, `pushman_list_devices`, `pushman_list_history`, `pushman_get_message`, `pushman_get_usage`, `pushman_get_status`, and `pushman_doctor`. They use the locally configured Pushman CLI credential through `pushman mcp`.
 2. If those tools are unavailable, resolve `pushman` from `PATH`. If it is absent, report the prerequisite and point to the [Pushman CLI installation guide](https://github.com/pushmanhq/pushman-cli/blob/main/docs/INSTALL.md); do not invent an installation method or credential.
-3. Run `pushman version`, then read `pushman help <command>` before composing an unfamiliar or version-sensitive fallback command. This skill is tested through Pushman 0.1.1 and can fall back to the capabilities exposed by an older installed version.
+3. For CLI fallback, run `pushman version`, then read `pushman help <command>` before composing an unfamiliar or version-sensitive command. When MCP is already connected, use its published schemas instead of requiring local shell access. This skill is tested through Pushman 0.1.1; the available schema or installed help governs supported fields and commands.
 4. Do not manually exchange JSON-RPC frames when a client can connect the MCP server or the ordinary CLI can perform the task.
 
 Use MCP for agent workflows because it publishes typed schemas, structured results, and safety annotations. Use the CLI for login, pairing, rename, logout, or when MCP is not connected.
@@ -25,7 +25,7 @@ Use MCP for agent workflows because it publishes typed schemas, structured resul
 ## Classify authorization
 
 - Read-only requests authorize only the narrowest matching status, device, usage, history, message, or doctor operation.
-- A direct request to send an exact notification authorizes that one send. Do not add a redundant confirmation when the user already specified the send and its meaningful content.
+- A direct request to send authorizes one notification with the specified content or a concise factual body within a clearly stated purpose, such as notifying the user when a named task finishes. Do not add a redundant confirmation when the content or bounded purpose and receiving scope are clear.
 - A request to draft, preview, configure, inspect, or explain a notification is not authorization to send it. Present the proposed body, title, targets, URL, and update key as applicable, then wait for confirmation.
 - A general terminal or task-completion request does not authorize sending unrelated progress notifications. Send only when the user asked to be notified.
 - Never broaden one send into repeated sends, additional devices, credential changes, authorization, or account operations.
@@ -34,8 +34,8 @@ Read [references/safety.md](references/safety.md) before sending, retrying, auth
 
 ## Send a notification
 
-1. Preserve the user's content and scope. Do not invent a URL, image, target device, group, update key, or additional message text. Minor formatting that the user requested is allowed.
-2. If specific devices matter and were not named, use `pushman_list_devices` or `pushman devices` and let the user choose. Omitting devices targets every currently eligible receiver.
+1. Preserve exact notification text when supplied. For a purpose-only request, compose a concise factual body limited to that purpose; a completion request does not authorize unrelated progress messages. Do not invent a URL, image, target device, group, or update key, or append unrelated content.
+2. Resolve a named device using `pushman_list_devices` or `pushman devices`; ask if it is ambiguous or unavailable. Omitting devices targets every currently eligible receiver. Use that default only when it matches the requested receiving scope, and never drop an unresolved device selector to make a send succeed.
 3. Prefer `pushman_send_notification`. Provide only requested fields: required `body`, optional `title`, `subtitle`, `url`, `group`, HTTPS `image`, `sound` (`default` or `none`), `key`, `format` (`plain` or `monospace`), and `devices`.
 4. For CLI fallback, use `pushman push - --json` and write the body on stdin so notification content does not enter process arguments or shell history. Pass optional fields as separate flags after consulting installed help, and validate the stable JSON result rather than parsing human confirmation text. Never interpolate content into shell syntax.
 5. Treat success only as server acceptance. Report the returned message ID and target-device count without claiming APNs delivery or that the user opened the notification.
@@ -62,7 +62,7 @@ Read tools require an account CLI credential. `PUSHMAN_TOKEN` is process-scoped 
 - Never request, display, copy, persist, or inspect the native keyring credential.
 - Never place `PUSHMAN_TOKEN` in command arguments, source code, logs, chat, or checked-in MCP configuration.
 - `pushman rename` changes the authorized sender nickname and `pushman logout` revokes the credential. Perform either only when explicitly requested; verify with `pushman status` afterward.
-- To configure a local stdio client, use the installed client's supported MCP configuration with command `pushman` and arguments `mcp`. Prefer the resolved absolute executable path for desktop clients whose `PATH` may differ from the shell. Do not expose the server over HTTP, a tunnel, or a public process supervisor, and do not report integration as working until the client can initialize the server and list the seven expected Pushman tools.
+- To configure a local stdio client, use the installed client's supported MCP configuration with command `pushman` and arguments `mcp`. Prefer the resolved absolute executable path for desktop clients whose `PATH` may differ from the shell. Do not expose the server over HTTP, a tunnel, or a public process supervisor, and do not report integration as working until the client can initialize the server and discover the Pushman tools needed for the request. The seven tools above are the documented 0.1.1 surface, not a permanent exact-count requirement.
 
 ## Update the Pushman CLI
 

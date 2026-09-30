@@ -1,19 +1,16 @@
-<div align="center">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/skills-cover-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="assets/skills-cover-light.svg">
+  <img src="assets/skills-cover-light.svg" alt="WhiteKiwi Skills — Clear intent. Useful skills." width="100%">
+</picture>
 
-# 🥝 WhiteKiwi Skills
+# WhiteKiwi Skills
 
-**Design with intent. Automate with evidence.**
+**Focused workflows. Explicit boundaries. Verified outcomes.**
 
-Four focused workflows for your AI agent. Install the ones you need.
+Portable agent skills for design guidelines, local schedules, and personal notifications. Install only what you need.
 
-[![Validate](https://github.com/WhiteKiwi/skills/actions/workflows/validate.yml/badge.svg)](https://github.com/WhiteKiwi/skills/actions/workflows/validate.yml)
-[![Releases](https://img.shields.io/badge/releases-per--skill-4d7c0f)](https://github.com/WhiteKiwi/skills/releases)
-[![Agent Skills](https://img.shields.io/badge/format-Agent_Skills-334155)](https://agentskills.io)
-[![License: MIT-0](https://img.shields.io/badge/license-MIT--0-blue.svg)](LICENSE)
-
-[Choose a skill](#choose-a-skill) · [Quick start](#quick-start) · [Installation](INSTALL.md) · [Distribution](docs/distribution.md) · [Contributing](docs/maintaining.md)
-
-</div>
+[Choose a skill](#choose-a-skill) · [Install](INSTALL.md) · [Workflows](docs/workflows.md) · [Distribution](docs/distribution.md) · [Maintain](docs/maintaining.md)
 
 ## Choose a skill
 
@@ -134,6 +131,12 @@ Report mode measures without failing on low contrast. `--min` enables a gate. Ex
 
 </details>
 
+## Verification
+
+[![Validate](https://github.com/WhiteKiwi/skills/actions/workflows/validate.yml/badge.svg)](https://github.com/WhiteKiwi/skills/actions/workflows/validate.yml)
+
+Builds, generated adapters, contrast helpers, and regression tests run in CI. See [Actions](https://github.com/WhiteKiwi/skills/actions) for the exact checked revision. Runtime-dependent checks are reported separately when their tools are absent.
+
 ## For maintainers
 
 ```sh
@@ -161,6 +164,10 @@ Change sources, rebuild, validate, then commit. Keep the new `create-design-guid
 Hermes can consume this public repository as a community tap. The portable source is ready for the skills CLI; skills.sh discovery depends on real installs and indexing. Neither means an official endorsement or a guaranteed store listing.
 
 [Supported routes, publication requirements, and other directories →](docs/distribution.md)
+
+## Design
+
+Repository artwork follows [PIP, the WhiteKiwi design system](https://design.whitekiwi.link/): quiet neutral canvas, editorial type, and one kiwi signal. [Artwork contract and source values](docs/repository-design.md). The installable skills remain brand-agnostic.
 
 ## License
 

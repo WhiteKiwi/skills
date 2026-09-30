@@ -29,7 +29,7 @@ Use only capabilities demonstrated by the installed command surface. In particul
 - For a mutation without `--dry-run`, read back the exact job, run, or service target first. Execute only when the current request itself authorizes that specific mutation; a request to inspect, explain, or draft a command is not authorization.
 - Never broaden a mutation from one named target to multiple jobs, runs, settings, or services without explicit scope.
 
-Read [references/safety.md](references/safety.md) before a mutation, import/export involving values, or a diagnosis where missed runs, overlap, or termination state matters.
+Read [references/safety.md](references/safety.md) before a mutation, import/export involving values, or a diagnosis where missed runs, overlap, or termination state matters. If a submitted mutation times out or loses its response, reconcile durable state before retrying; losing the acknowledgement does not prove that no job or run was created.
 
 ## Create or update a job
 
