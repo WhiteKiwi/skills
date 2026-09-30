@@ -10,6 +10,42 @@
     "display_name": "WhiteKiwi Skills"
   },
   "skills": {
+    "create-design-guideline": {
+      "version": "0.1.0",
+      "display_name": "Create Design Guideline",
+      "short_description": "Create evidence-based brand and product design guidelines.",
+      "category": "Design",
+      "homepage": "https://github.com/WhiteKiwi/skills/tree/main/skills/create-design-guideline",
+      "required_bins": [
+        "node"
+      ],
+      "capabilities": [
+        "Guideline Creation",
+        "Brand Systems"
+      ],
+      "default_prompt": "Use $create-design-guideline to research and create a reusable design guideline for this product.",
+      "default_prompts": [
+        "Create an evidence-based brand and product design guideline.",
+        "Substantially revise the product's canonical design guideline."
+      ],
+      "keywords": [
+        "design",
+        "guidelines",
+        "brand",
+        "tokens",
+        "themes",
+        "accessibility"
+      ],
+      "clawhub": {
+        "slug": "create-design-guideline",
+        "name": "Create Design Guideline",
+        "topics": [
+          "design",
+          "design-system",
+          "brand-guidelines"
+        ]
+      }
+    },
     "design-guidelines": {
       "version": "0.6.0",
       "display_name": "Design Guidelines",

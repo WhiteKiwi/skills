@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Design Guideline"
+  short_description: "Create evidence-based brand and product design guidelines."
+  default_prompt: "Use $create-design-guideline to research and create a reusable design guideline for this product."

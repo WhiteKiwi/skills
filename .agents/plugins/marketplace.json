@@ -5,6 +5,18 @@
   },
   "plugins": [
     {
+      "name": "create-design-guideline",
+      "source": {
+        "source": "local",
+        "path": "./plugins/create-design-guideline"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Design"
+    },
+    {
       "name": "design-guidelines",
       "source": {
         "source": "local",

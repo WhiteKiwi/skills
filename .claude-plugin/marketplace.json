@@ -9,6 +9,12 @@
   },
   "plugins": [
     {
+      "name": "create-design-guideline",
+      "source": "./plugins/create-design-guideline",
+      "description": "Create evidence-based brand and product design guidelines.",
+      "version": "0.1.0"
+    },
+    {
       "name": "design-guidelines",
       "source": "./plugins/design-guidelines",
       "description": "Create and audit reusable product design guidelines.",

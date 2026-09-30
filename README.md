@@ -10,6 +10,7 @@ Portable [Agent Skills](https://agentskills.io) for Claude Code, Codex and ChatG
 
 | Skill | What it does | Requires | Install name |
 |---|---|---|---|
+| [Create Design Guideline](skills/create-design-guideline/SKILL.md) | Create or substantially revise a canonical brand and product guideline | Node.js for the bundled contrast checker | `create-design-guideline` |
 | [Design Guidelines](skills/design-guidelines/SKILL.md) | Create, audit, and implement reusable brand and product guidelines | Node.js for the bundled contrast checker | `design-guidelines` |
 | [Locron](skills/locron/SKILL.md) | Safely operate and diagnose local schedules | [`locron`](https://github.com/WhiteKiwi/locron#installation) on `PATH` | `locron` |
 | [Pushman](skills/pushman/SKILL.md) | Safely send and inspect personal iPhone notifications | [`pushman`](https://github.com/pushmanhq/pushman-cli/blob/main/docs/INSTALL.md) on `PATH` | `pushman` |
@@ -34,6 +35,8 @@ claude plugin install locron@whitekiwi-skills
 claude plugin install pushman@whitekiwi-skills
 # or
 claude plugin install design-guidelines@whitekiwi-skills
+# or
+claude plugin install create-design-guideline@whitekiwi-skills
 ```
 
 ### Codex and ChatGPT
@@ -52,6 +55,8 @@ codex plugin add locron@whitekiwi-skills
 codex plugin add pushman@whitekiwi-skills
 # or
 codex plugin add design-guidelines@whitekiwi-skills
+# or
+codex plugin add create-design-guideline@whitekiwi-skills
 ```
 
 Codex CLI uses `plugin add` for installation. The same catalog is available in the ChatGPT desktop Plugins directory after registration, where each workflow remains a separate install choice.
@@ -66,9 +71,24 @@ openclaw skills install @whitekiwi/locron
 openclaw skills install @whitekiwi/pushman
 # or
 openclaw skills install @whitekiwi/design-guidelines
+# or
+openclaw skills install @whitekiwi/create-design-guideline
 ```
 
 The owner-qualified ClawHub reference is the supported registry path. Registry installs require a published ClawHub version; a repository push alone does not publish a new entry. Review the current registry scan before installing. Before publication or for local development, use the generated payload described below.
+
+## Use the Create Design Guideline skill
+
+Choose this focused workflow to establish a new guideline or substantially revise the canonical document:
+
+```text
+Use the create-design-guideline skill to research and create a brand and product guideline for this app.
+Use the create-design-guideline skill to substantially revise our canonical design guideline.
+```
+
+It turns product context, inherited brand choices, and authoritative references into a visual thesis, operating principles, foundations, semantic tokens, theme mappings, interaction states, and an adoption plan. Its canonical template records evidence and decision status; when implementation is authorized, it also maintains a concise `DESIGN.md` execution contract and verifies representative screens. Audit-only requests belong to the broader Design Guidelines workflow below.
+
+Read [skills/create-design-guideline/SKILL.md](skills/create-design-guideline/SKILL.md). The skill includes its own research reference, canonical deliverable template, and Node.js contrast checker with the same report and gate behavior described below. Each design workflow is self-contained and independently installable.
 
 ## Use the Design Guidelines skill
 
@@ -91,7 +111,7 @@ node scripts/contrast-check.mjs --min 4.5 --json '#171717:#C6FF4A'
 
 Report mode measures without failing on low contrast. `--min` enables a gate for the chosen use; exit codes are 0 for a successful report or passing gate, 1 for a missed threshold, and 2 for invalid input. JSON preserves the full ratio. This checks color pairs, not complete WCAG conformance; alpha, CSS tokens, OKLCH, and P3 require separate resolution or measurement.
 
-Read the authored workflow in [skills/design-guidelines/SKILL.md](skills/design-guidelines/SKILL.md). It consolidates the earlier local `create-design-guideline` and `design-guidelines` workflows under one public name.
+Read the authored workflow in [skills/design-guidelines/SKILL.md](skills/design-guidelines/SKILL.md). Use Create Design Guideline for focused guideline creation or major revision, and Design Guidelines for broader research, audits, and authorized implementation. Install either workflow or both.
 
 ## Use the Locron skill
 
@@ -139,11 +159,13 @@ Read the authored workflow in [skills/pushman/SKILL.md](skills/pushman/SKILL.md)
 ```sh
 claude plugin marketplace update whitekiwi-skills
 claude plugin update design-guidelines@whitekiwi-skills
+claude plugin update create-design-guideline@whitekiwi-skills
 claude plugin update locron@whitekiwi-skills
 claude plugin update pushman@whitekiwi-skills
 claude plugin uninstall locron@whitekiwi-skills
 claude plugin uninstall pushman@whitekiwi-skills
 claude plugin uninstall design-guidelines@whitekiwi-skills
+claude plugin uninstall create-design-guideline@whitekiwi-skills
 ```
 
 ### Codex and ChatGPT
@@ -151,11 +173,13 @@ claude plugin uninstall design-guidelines@whitekiwi-skills
 ```sh
 codex plugin marketplace upgrade whitekiwi-skills
 codex plugin remove design-guidelines@whitekiwi-skills
+codex plugin remove create-design-guideline@whitekiwi-skills
 codex plugin remove locron@whitekiwi-skills
 codex plugin remove pushman@whitekiwi-skills
 codex plugin add locron@whitekiwi-skills
 codex plugin add pushman@whitekiwi-skills
 codex plugin add design-guidelines@whitekiwi-skills
+codex plugin add create-design-guideline@whitekiwi-skills
 ```
 
 Remove the catalog itself only when it is no longer needed:
@@ -170,6 +194,7 @@ codex plugin marketplace remove whitekiwi-skills
 openclaw skills update @whitekiwi/locron
 openclaw skills update @whitekiwi/pushman
 openclaw skills update @whitekiwi/design-guidelines
+openclaw skills update @whitekiwi/create-design-guideline
 ```
 
 The current native OpenClaw CLI does not expose `skills uninstall`. The standalone `clawhub uninstall` command applies to installations tracked by the standalone ClawHub CLI, not automatically to native OpenClaw-managed installations.
@@ -186,7 +211,7 @@ The install boundary is a plugin, not the entire repository. WhiteKiwi publishes
 
 Each `skills/<name>/` directory is an authored workflow. Its generated `plugins/<name>/` package contains only that workflow. `scripts/build.sh` produces every adapter from those sources, injects only platform-specific metadata, preserves executable helpers, and rejects generated drift. Release archives are deterministic and include checksums.
 
-Each skill has an independent semantic version in `catalog.json` at `skills.<name>.version`. Its Claude/Codex manifests, Claude marketplace entry, ZIP names, and ClawHub publication all use that version. Updating Locron leaves the Design Guidelines and Pushman versions and archives unchanged. The migration preserves `0.6.0` as the starting version of all three skills; future bumps apply only to the changed skill.
+Each skill has an independent semantic version in `catalog.json` at `skills.<name>.version`. Its Claude/Codex manifests, Claude marketplace entry, ZIP names, and ClawHub publication all use that version. Updating Locron leaves the other skills' versions and archives unchanged. Design Guidelines, Locron, and Pushman kept `0.6.0` when migrating to independent versions; Create Design Guideline was added at `0.1.0`. Future bumps apply only to the changed skill.
 
 ## Local development
 
@@ -206,6 +231,7 @@ codex plugin marketplace add .
 openclaw skills install ./platforms/openclaw/locron --as locron
 openclaw skills install ./platforms/openclaw/pushman --as pushman
 openclaw skills install ./platforms/openclaw/design-guidelines --as design-guidelines
+openclaw skills install ./platforms/openclaw/create-design-guideline --as create-design-guideline
 ```
 
 Build all generated payloads and reproducible release archives:

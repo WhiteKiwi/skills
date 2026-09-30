@@ -1,0 +1,21 @@
+{
+  "name": "create-design-guideline",
+  "version": "0.1.0",
+  "description": "Create or substantially revise a reusable brand and product design guideline from product context, existing assets, and authoritative references. Use when the user asks to establish a visual system, brand guide, color and theme rules, design principles, or a canonical guideline page/document. Do not use for an audit-only review or a one-off cosmetic CSS change.",
+  "author": {
+    "name": "WhiteKiwi",
+    "url": "https://github.com/whitekiwi"
+  },
+  "homepage": "https://github.com/WhiteKiwi/skills/tree/main/skills/create-design-guideline",
+  "repository": "https://github.com/whitekiwi/skills",
+  "license": "MIT-0",
+  "keywords": [
+    "design",
+    "guidelines",
+    "brand",
+    "tokens",
+    "themes",
+    "accessibility"
+  ],
+  "skills": "./skills/"
+}
