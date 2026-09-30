@@ -122,6 +122,33 @@ class ValidationFailureTests(unittest.TestCase):
         with self.assertRaisesRegex(ValidationError, phrase):
             load_project(self.fixture.root)
 
+    def test_discovery_groups_follow_catalog_without_payload_changes(self) -> None:
+        root = self.fixture.root
+        build(root, root / "dist")
+        before = {p.name: p.read_bytes() for p in (root / "dist").glob("*.zip")}
+        self.fixture.add_pushman()
+        catalog_path = root / "catalog.json"
+        catalog = json.loads(catalog_path.read_text())
+        catalog["skills"]["pushman"]["category"] = "Notifications"
+        catalog_path.write_text(json.dumps(catalog) + "\n")
+        build(root, root / "dist")
+        config = json.loads((root / "skills.sh.json").read_text())
+        self.assertEqual(config["$schema"], "https://skills.sh/schemas/skills.sh.schema.json")
+        self.assertEqual(config["groupings"], [
+            {"title": "Notifications", "skills": ["pushman"]},
+            {"title": "Productivity", "skills": ["locron"]},
+        ])
+        for name, content in before.items():
+            self.assertEqual((root / "dist" / name).read_bytes(), content)
+        validate_generated(root)
+
+    def test_discovery_metadata_drift_is_rejected(self) -> None:
+        root = self.fixture.root
+        build(root, root / "dist")
+        (root / "skills.sh.json").write_text('{"groupings": []}\n')
+        with self.assertRaisesRegex(ValidationError, "generated file drift: skills.sh.json"):
+            validate_generated(root)
+
     def test_bad_frontmatter_fails_specifically(self) -> None:
         self.fixture.skill.write_text("name: locron\n", encoding="utf-8")
         self.assert_failure("invalid YAML frontmatter")

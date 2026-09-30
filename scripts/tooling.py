@@ -31,6 +31,7 @@ GENERATED_ROOTS = (Path("plugins"), Path("platforms/openclaw"))
 GENERATED_FILES = (
     Path(".claude-plugin/marketplace.json"),
     Path(".agents/plugins/marketplace.json"),
+    Path("skills.sh.json"),
 )
 
 
@@ -402,6 +403,17 @@ def expected_generated(root: Path) -> dict[Path, bytes]:
     }
     result[Path(".claude-plugin/marketplace.json")] = _json_bytes(claude_marketplace)
     result[Path(".agents/plugins/marketplace.json")] = _json_bytes(codex_marketplace)
+    groups: dict[str, list[str]] = {}
+    for skill_name, info in sorted(catalog["skills"].items()):
+        groups.setdefault(info["category"], []).append(skill_name)
+    result[Path("skills.sh.json")] = _json_bytes({
+        "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+        "notGrouped": "bottom",
+        "groupings": [
+            {"title": category, "skills": names}
+            for category, names in sorted(groups.items())
+        ],
+    })
     return result
 
 

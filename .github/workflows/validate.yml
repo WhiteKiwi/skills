@@ -33,4 +33,4 @@ jobs:
         run: python scripts/clawhub.py --dry-run
 
       - name: Reject generated drift
-        run: git diff --exit-code -- .claude-plugin .agents/plugins plugins platforms/openclaw
+        run: git diff --exit-code -- .claude-plugin .agents/plugins plugins platforms/openclaw skills.sh.json
