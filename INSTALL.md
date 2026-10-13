@@ -51,6 +51,8 @@ claude plugin marketplace add WhiteKiwi/skills
 Then choose a plugin:
 
 ```sh
+claude plugin install loboot@whitekiwi-skills
+# or
 claude plugin install locron@whitekiwi-skills
 # or
 claude plugin install pushman@whitekiwi-skills
@@ -71,6 +73,8 @@ codex plugin marketplace add WhiteKiwi/skills
 Then choose a plugin:
 
 ```sh
+codex plugin add loboot@whitekiwi-skills
+# or
 codex plugin add locron@whitekiwi-skills
 # or
 codex plugin add pushman@whitekiwi-skills
@@ -98,6 +102,27 @@ openclaw skills install @whitekiwi/create-design-guideline
 
 The owner-qualified ClawHub reference is the supported registry path. Registry installs require a published ClawHub version; a repository push alone does not publish a new entry. Review the current registry scan before installing. Before publication or for local development, use the generated payload described below.
 
+## Loboot
+
+Install the agent workflow through a public-source route, independently of the Loboot executable:
+
+```sh
+npx skills add WhiteKiwi/skills --skill loboot
+# or use the Hermes scan/install flow
+hermes skills inspect WhiteKiwi/skills/skills/loboot
+hermes skills install WhiteKiwi/skills/skills/loboot
+```
+
+Claude/Codex plugin commands are listed above. For OpenClaw before a verified registry publication, clone this repository and use the generated payload:
+
+```sh
+openclaw skills install ./platforms/openclaw/loboot --as loboot
+```
+
+The independently versioned `loboot-v0.1.0` GitHub release, when published, supplies `loboot-skill-0.1.0.zip` and Claude/Codex/OpenClaw variants with `loboot-SHA256SUMS`. Verify the release and checksums before unpacking. A portable skill ZIP is not a documented ChatGPT plugin installer.
+
+The workflow requires the separate [Loboot CLI](https://github.com/WhiteKiwi/loboot/blob/main/docs/INSTALL.md) on `PATH`. Check the current official binary/Homebrew/source installation options there; this catalog does not install it, enable a service, or create a ClawHub listing. The skill targets CLI 0.1.0, with offline Linux/macOS coverage; real login-session acceptance must be evaluated separately.
+
 ## Update or remove
 
 ### Claude Code
@@ -106,8 +131,10 @@ The owner-qualified ClawHub reference is the supported registry path. Registry i
 claude plugin marketplace update whitekiwi-skills
 claude plugin update design-guidelines@whitekiwi-skills
 claude plugin update create-design-guideline@whitekiwi-skills
+claude plugin update loboot@whitekiwi-skills
 claude plugin update locron@whitekiwi-skills
 claude plugin update pushman@whitekiwi-skills
+claude plugin uninstall loboot@whitekiwi-skills
 claude plugin uninstall locron@whitekiwi-skills
 claude plugin uninstall pushman@whitekiwi-skills
 claude plugin uninstall design-guidelines@whitekiwi-skills
@@ -120,8 +147,10 @@ claude plugin uninstall create-design-guideline@whitekiwi-skills
 codex plugin marketplace upgrade whitekiwi-skills
 codex plugin remove design-guidelines@whitekiwi-skills
 codex plugin remove create-design-guideline@whitekiwi-skills
+codex plugin remove loboot@whitekiwi-skills
 codex plugin remove locron@whitekiwi-skills
 codex plugin remove pushman@whitekiwi-skills
+codex plugin add loboot@whitekiwi-skills
 codex plugin add locron@whitekiwi-skills
 codex plugin add pushman@whitekiwi-skills
 codex plugin add design-guidelines@whitekiwi-skills

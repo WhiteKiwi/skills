@@ -1,0 +1,20 @@
+{
+  "name": "loboot",
+  "version": "0.1.0",
+  "description": "Safely preview, create, inspect, update, remove, start, stop, enable, disable, and diagnose native user services managed by Loboot on macOS launchd or Linux systemd. Use when a request names Loboot or asks to operate its owned definitions, activation preferences, runtime state, offline plans, or discovery; not for cron scheduling, system/boot services, Windows, or adopting unrelated native services.",
+  "author": {
+    "name": "WhiteKiwi",
+    "url": "https://github.com/whitekiwi"
+  },
+  "homepage": "https://github.com/WhiteKiwi/loboot",
+  "repository": "https://github.com/whitekiwi/skills",
+  "license": "MIT-0",
+  "keywords": [
+    "loboot",
+    "launchd",
+    "systemd",
+    "user-services",
+    "login"
+  ],
+  "skills": "./skills/"
+}

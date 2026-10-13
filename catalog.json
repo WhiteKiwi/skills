@@ -81,6 +81,41 @@
         ]
       }
     },
+    "loboot": {
+      "version": "0.1.0",
+      "display_name": "Loboot",
+      "short_description": "Safely manage and diagnose Loboot native user services.",
+      "category": "Productivity",
+      "homepage": "https://github.com/WhiteKiwi/loboot",
+      "required_bins": [
+        "loboot"
+      ],
+      "capabilities": [
+        "User Services",
+        "Diagnostics"
+      ],
+      "default_prompt": "Use $loboot to preview and safely configure this native user service.",
+      "default_prompts": [
+        "Preview a Loboot user service without starting it.",
+        "Diagnose the runtime and activation state of a Loboot service."
+      ],
+      "keywords": [
+        "loboot",
+        "launchd",
+        "systemd",
+        "user-services",
+        "login"
+      ],
+      "clawhub": {
+        "slug": "loboot",
+        "name": "Loboot",
+        "topics": [
+          "user-services",
+          "local-first",
+          "automation"
+        ]
+      }
+    },
     "locron": {
       "version": "0.6.1",
       "display_name": "Locron",

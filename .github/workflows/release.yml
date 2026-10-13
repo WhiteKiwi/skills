@@ -4,6 +4,16 @@ on:
   push:
     tags:
       - "*-v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Exact skill release tag (for example loboot-v0.1.0)
+        required: true
+        type: string
+      expected_commit:
+        description: Reviewed current main commit (full 40-character SHA)
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -30,7 +40,18 @@ jobs:
           python -m pip install --disable-pip-version-check skills-ref==0.1.1 PyYAML==6.0.3
           npm install --global @anthropic-ai/claude-code@2.1.241 clawhub@0.23.3
 
+      - name: Validate before manual tag creation
+        if: github.event_name == 'workflow_dispatch'
+        run: ./scripts/validate.sh
+
+      - name: Prepare exact manual release tag
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+        run: python scripts/prepare_release.py --tag "$RELEASE_TAG" --expected-commit "$EXPECTED_COMMIT"
+
       - name: Validate, release, and publish
         env:
-          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
         run: ./scripts/publish.sh --release --tag "$RELEASE_TAG"
