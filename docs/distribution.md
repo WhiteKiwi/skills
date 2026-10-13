@@ -43,7 +43,7 @@ Review destinations and existing same-name directories before installing or upda
 
 `skills.sh.json` is generated from `catalog.json` categories and skill names. It is display metadata, not a publishing credential or installation manifest. The same groupings can label Hermes tap entries. A source push does not guarantee the directory has refreshed; do not manufacture installs to inflate its ranking.
 
-Loboot follows these same source/plugin routes with independent skill version `0.1.0`. Its generated OpenClaw payload is installable locally; a registry listing must be verified separately. The catalog does not bundle or install the Loboot CLI.
+Loboot follows these same source/plugin routes with independent skill version `0.1.0`. Its [ClawHub version 0.1.0](https://clawhub.ai/whitekiwi/skills/loboot) was publicly inspected and installed on 2026-10-13; all three downloaded files matched the generated OpenClaw payload. Local payload installation remains available. The catalog does not bundle or install the Loboot CLI.
 
 ## Additional directories investigated
 
