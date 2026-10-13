@@ -91,6 +91,8 @@ Codex CLI uses `plugin add` for installation. Use the plugin catalog UI in suppo
 Install a skill directly by its owner-qualified ClawHub reference:
 
 ```sh
+openclaw skills install @whitekiwi/loboot
+# or
 openclaw skills install @whitekiwi/locron
 # or
 openclaw skills install @whitekiwi/pushman
@@ -113,7 +115,7 @@ hermes skills inspect WhiteKiwi/skills/skills/loboot
 hermes skills install WhiteKiwi/skills/skills/loboot
 ```
 
-Claude/Codex plugin commands are listed above. For OpenClaw before a verified registry publication, clone this repository and use the generated payload:
+Claude/Codex plugin commands are listed above. [Loboot 0.1.0 is published on ClawHub](https://clawhub.ai/whitekiwi/skills/loboot); use the owner-qualified OpenClaw command above. For a local-source alternative, clone this repository and use the generated payload:
 
 ```sh
 openclaw skills install ./platforms/openclaw/loboot --as loboot
@@ -166,6 +168,7 @@ codex plugin marketplace remove whitekiwi-skills
 ### OpenClaw
 
 ```sh
+openclaw skills update @whitekiwi/loboot
 openclaw skills update @whitekiwi/locron
 openclaw skills update @whitekiwi/pushman
 openclaw skills update @whitekiwi/design-guidelines

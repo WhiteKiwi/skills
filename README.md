@@ -90,7 +90,7 @@ This requires a published ClawHub version. A GitHub push alone does not publish 
 
 </details>
 
-For portable and native-plugin examples, replace `create-design-guideline` with `design-guidelines`, `locron`, `loboot`, or `pushman`. Loboot's OpenClaw payload can be installed locally; do not assume a ClawHub version is published. Adding a catalog never means installing the entire collection.
+Replace `create-design-guideline` with `design-guidelines`, `locron`, `loboot`, or `pushman`. Adding a catalog never means installing the entire collection.
 
 ## Try it
 
