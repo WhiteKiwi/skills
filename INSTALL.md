@@ -119,7 +119,7 @@ Claude/Codex plugin commands are listed above. For OpenClaw before a verified re
 openclaw skills install ./platforms/openclaw/loboot --as loboot
 ```
 
-The independently versioned `loboot-v0.1.0` GitHub release, when published, supplies `loboot-skill-0.1.0.zip` and Claude/Codex/OpenClaw variants with `loboot-SHA256SUMS`. Verify the release and checksums before unpacking. A portable skill ZIP is not a documented ChatGPT plugin installer.
+The independently versioned [Loboot skill 0.1.0 release](https://github.com/WhiteKiwi/skills/releases/tag/loboot-v0.1.0) supplies `loboot-skill-0.1.0.zip` and Claude/Codex/OpenClaw variants with `loboot-SHA256SUMS`. Verify the release and checksums before unpacking. A portable skill ZIP is not a documented ChatGPT plugin installer.
 
 The workflow requires the separate [Loboot CLI](https://github.com/WhiteKiwi/loboot/blob/main/docs/INSTALL.md) on `PATH`. Check the current official binary/Homebrew/source installation options there; this catalog does not install it, enable a service, or create a ClawHub listing. The skill targets CLI 0.1.0, with offline Linux/macOS coverage; real login-session acceptance must be evaluated separately.
 
