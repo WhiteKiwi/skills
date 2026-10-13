@@ -57,6 +57,21 @@ The workflow is tested through Locron 0.9.2. It uses `explain` for the preferred
 
 Read the authored workflow in [skills/locron/SKILL.md](../skills/locron/SKILL.md) and its on-demand [safety reference](../skills/locron/references/safety.md).
 
+## Use the Loboot skill
+
+Install the [Loboot CLI](https://github.com/WhiteKiwi/loboot/blob/main/docs/INSTALL.md) separately, then ask:
+
+```text
+Use the loboot skill to preview this native user service without starting it.
+Use the loboot skill to explain whether worker is running and enabled.
+```
+
+The workflow targets Loboot 0.1.0 and uses `--json` with `schema_version: "loboot.cli/v1"`. Version/help remain text. It dry-runs every supported mutation and keeps definition, runtime, and future activation separate: add is disabled, enable does not start, stop does not disable, and update does not restart. macOS requires enable before start and stop before disabling a loaded job; Linux activation follows its user-manager lifetime.
+
+For experiments, `--root` isolates offline files and prevents service-manager calls, with `--platform linux|macos` selecting a renderer. Offline add/update/remove still write sandbox files; dry-run itself is read-only. Offline and fake-manager tests do not establish real login-session acceptance.
+
+Loboot is not a scheduler and does not promise exactly-once execution. Discovery cannot adopt foreign services, and built-in logs, Windows, system/boot scope, and secret fields are unsupported. Read the authored [workflow](../skills/loboot/SKILL.md) and on-demand [safety reference](../skills/loboot/references/safety.md).
+
 ## Use the Pushman skill
 
 Install [Pushman CLI](https://github.com/pushmanhq/pushman-cli/blob/main/docs/INSTALL.md) 0.1.1 or newer, authorize it through a browser or the iPhone app, and optionally connect its local stdio MCP server:

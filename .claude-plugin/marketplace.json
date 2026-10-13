@@ -21,6 +21,12 @@
       "version": "0.6.1"
     },
     {
+      "name": "loboot",
+      "source": "./plugins/loboot",
+      "description": "Safely manage and diagnose Loboot native user services.",
+      "version": "0.1.0"
+    },
+    {
       "name": "locron",
       "source": "./plugins/locron",
       "description": "Safely operate, explain, and diagnose Locron.",

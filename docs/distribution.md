@@ -43,13 +43,15 @@ Review destinations and existing same-name directories before installing or upda
 
 `skills.sh.json` is generated from `catalog.json` categories and skill names. It is display metadata, not a publishing credential or installation manifest. The same groupings can label Hermes tap entries. A source push does not guarantee the directory has refreshed; do not manufacture installs to inflate its ranking.
 
+Loboot follows these same source/plugin routes with independent skill version `0.1.0`. Its generated OpenClaw payload is installable locally; a registry listing must be verified separately. The catalog does not bundle or install the Loboot CLI.
+
 ## Additional directories investigated
 
 | Directory | Observed model | Current support / boundary |
 |---|---|---|
 | [SkillsMP](https://skillsmp.com/) | Index of public GitHub `SKILL.md` files | Sources are compatible with its documented discovery model. Inclusion is controlled by the index; no upload API is assumed or fabricated |
 | [LobeHub Skills](https://lobehub.com/skills) | Third-party skills marketplace; Hermes also integrates LobeHub's agent catalog | No verified skill-publisher API or successful submission is claimed here. A marketplace download endpoint is not an upload API; agent JSON and Agent Skills are different artifacts |
-| [browse.sh](https://browse.sh) | Browserbase's website-specific automation skill catalog, integrated by Hermes | Not an appropriate generic upload target for these design, scheduler, and notification workflows |
+| [browse.sh](https://browse.sh) | Browserbase's website-specific automation skill catalog, integrated by Hermes | Not an appropriate generic upload target for these design, scheduler, user-service, and notification workflows |
 
 Do not add a token or publish workflow for a service until its official submission method, package contract, ownership, and terms are verified. A future account or persistent credential setup requires the maintainer's action; never commit credentials to this repository.
 

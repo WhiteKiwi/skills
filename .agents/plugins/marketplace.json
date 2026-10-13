@@ -29,6 +29,18 @@
       "category": "Design"
     },
     {
+      "name": "loboot",
+      "source": {
+        "source": "local",
+        "path": "./plugins/loboot"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
       "name": "locron",
       "source": {
         "source": "local",
