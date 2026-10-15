@@ -4,39 +4,43 @@
 
 ## Use the Create Design Guideline skill
 
-Choose this focused workflow to establish a new guideline or substantially revise the canonical document:
+Choose the outcome you need:
 
 ```text
-Use the create-design-guideline skill to research and create a brand and product guideline for this app.
-Use the create-design-guideline skill to substantially revise our canonical design guideline.
+Use create-design-guideline to create or substantially revise a brand and product guideline for this app.
+Use create-design-guideline to audit this product's themes and interaction states.
+Use create-design-guideline to implement the approved guideline in these components.
 ```
 
-It turns product context, inherited brand choices, and authoritative references into a visual thesis, operating principles, foundations, semantic tokens, theme mappings, interaction states, and an adoption plan. Its canonical template records evidence and decision status; when implementation is authorized, it also maintains a concise `DESIGN.md` execution contract and verifies representative screens. Audit-only requests belong to the broader Design Guidelines workflow below.
+The unified workflow covers creation, audits, and authorized implementation.
+It connects product context and research to design principles, semantic tokens,
+theme rules, interaction states, and an adoption plan. Audits preserve intentional
+choices and report findings with their location, evidence, impact, and proposed
+correction. Implementation keeps the guideline and tokens together and verifies
+representative rendered screens.
 
-Read [skills/create-design-guideline/SKILL.md](../skills/create-design-guideline/SKILL.md). The skill includes its own research reference, canonical deliverable template, and Node.js contrast checker with the same report and gate behavior described below. Each design workflow is self-contained and independently installable.
+Read [skills/create-design-guideline/SKILL.md](../skills/create-design-guideline/SKILL.md).
+Supporting references cover the canonical deliverable, color research, audits and
+visual QA, and agent-built interfaces or responsive composition. Load the
+references relevant to the requested outcome. A documentation-only or audit-only
+request does not authorize a product redesign or deployment.
 
-## Use the Design Guidelines skill
-
-Ask for the outcome you need:
-
-```text
-Use the design-guidelines skill to create a brand and product guideline for this app.
-Use the design-guidelines skill to audit this product's themes and interaction states.
-Use the design-guidelines skill to implement the approved guideline in these components.
-```
-
-The workflow combines guideline creation, visual audits, and authorized implementation in one portable skill. It connects research to product decisions, separates proposed choices from verified implementation, and covers semantic tokens, typography, layout, themes, states, motion, and visual QA. Supporting references provide a canonical deliverable template, an audit format, accessibility requirements and exceptions, and guidance for agent-built interfaces.
-
-The bundled checker needs Node.js and accepts opaque sRGB hex pairs. From the installed skill directory:
+The bundled checker needs Node.js and accepts opaque sRGB hex pairs. From the
+installed skill directory:
 
 ```sh
 node scripts/contrast-check.mjs '#171717:#C6FF4A'
 node scripts/contrast-check.mjs --min 4.5 --json '#171717:#C6FF4A'
 ```
 
-Report mode measures without failing on low contrast. `--min` enables a gate for the chosen use; exit codes are 0 for a successful report or passing gate, 1 for a missed threshold, and 2 for invalid input. JSON preserves the full ratio. This checks color pairs, not complete WCAG conformance; alpha, CSS tokens, OKLCH, and P3 require separate resolution or measurement.
+Report mode measures without failing on low contrast. `--min` enables a gate for
+the chosen use; exit codes are 0 for a successful report or passing gate, 1 for a
+missed threshold, and 2 for invalid input. JSON preserves the full ratio. This
+checks color pairs, not complete WCAG conformance; alpha, CSS tokens, OKLCH, and
+P3 require separate resolution or measurement.
 
-Read the authored workflow in [skills/design-guidelines/SKILL.md](../skills/design-guidelines/SKILL.md). Use Create Design Guideline for focused guideline creation or major revision, and Design Guidelines for broader research, audits, and authorized implementation. Install either workflow or both.
+For an existing `design-guidelines` installation, follow the
+[migration guidance](../INSTALL.md#migrate-from-design-guidelines).
 
 ## Use the Kiwi Design System skill
 

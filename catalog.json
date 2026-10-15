@@ -11,9 +11,9 @@
   },
   "skills": {
     "create-design-guideline": {
-      "version": "0.1.1",
+      "version": "0.2.0",
       "display_name": "Create Design Guideline",
-      "short_description": "Create evidence-based brand and product design guidelines.",
+      "short_description": "Create, audit, and implement product design guidelines.",
       "category": "Design",
       "homepage": "https://github.com/WhiteKiwi/skills/tree/main/skills/create-design-guideline",
       "required_bins": [
@@ -21,12 +21,15 @@
       ],
       "capabilities": [
         "Guideline Creation",
-        "Brand Systems"
+        "Brand Systems",
+        "Visual Audits",
+        "Design Implementation"
       ],
-      "default_prompt": "Use $create-design-guideline to research and create a reusable design guideline for this product.",
+      "default_prompt": "Use $create-design-guideline to create, audit, or implement a reusable design guideline for this product.",
       "default_prompts": [
-        "Create an evidence-based brand and product design guideline.",
-        "Substantially revise the product's canonical design guideline."
+        "Create or revise a brand and product design guideline.",
+        "Audit the product's tokens, themes, and interaction states.",
+        "Implement the approved guideline and verify representative screens."
       ],
       "keywords": [
         "design",
@@ -43,41 +46,6 @@
           "design",
           "design-system",
           "brand-guidelines"
-        ]
-      }
-    },
-    "design-guidelines": {
-      "version": "0.6.1",
-      "display_name": "Design Guidelines",
-      "short_description": "Create and audit reusable product design guidelines.",
-      "category": "Design",
-      "homepage": "https://github.com/WhiteKiwi/skills/tree/main/skills/design-guidelines",
-      "required_bins": [
-        "node"
-      ],
-      "capabilities": [
-        "Design Guidelines",
-        "Visual Audits"
-      ],
-      "default_prompt": "Use $design-guidelines to create or audit a reusable design guideline for this product.",
-      "default_prompts": [
-        "Create a reusable brand and product design guideline.",
-        "Audit the product's tokens, themes, and interaction states."
-      ],
-      "keywords": [
-        "design",
-        "guidelines",
-        "tokens",
-        "themes",
-        "accessibility"
-      ],
-      "clawhub": {
-        "slug": "design-guidelines",
-        "name": "Design Guidelines",
-        "topics": [
-          "design",
-          "design-system",
-          "accessibility"
         ]
       }
     },

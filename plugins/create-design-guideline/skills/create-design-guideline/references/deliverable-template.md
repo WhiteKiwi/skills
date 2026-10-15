@@ -85,7 +85,7 @@ Repeat for links, controls, cards, navigation, and inputs only when they exist. 
 
 ## 9. Responsive and motion behavior
 
-- mobile simplification rules
+- per-section responsive treatment: preserve, recompose, collapse, or defer; keep essential information and actions available
 - wrapping and truncation rules
 - touch target and focus behavior
 - entry and continuous motion limits
@@ -105,6 +105,7 @@ Repeat for links, controls, cards, navigation, and inputs only when they exist. 
 - narrowest supported viewport and typical wide viewport; web reflow at 320 CSS px where applicable
 - hover, keyboard focus, active/selected, disabled, error, and success states when present
 - longest realistic text and URLs in the supported languages, including non-Latin wrapping when relevant
+- keyboard use, zoom, overflow, focus obscuration, and target behavior
 - reduced motion
 - print/PDF/social/export surfaces when present
 - contrast measurement and rendered visual inspection
