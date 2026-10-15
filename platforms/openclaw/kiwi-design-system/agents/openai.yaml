@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kiwi Design System"
+  short_description: "Apply PIP and contribute shared design-system improvements."
+  default_prompt: "Use $kiwi-design-system to apply PIP to this product and propose useful shared improvements."

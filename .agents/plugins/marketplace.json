@@ -29,6 +29,18 @@
       "category": "Design"
     },
     {
+      "name": "kiwi-design-system",
+      "source": {
+        "source": "local",
+        "path": "./plugins/kiwi-design-system"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Design"
+    },
+    {
       "name": "loboot",
       "source": {
         "source": "local",

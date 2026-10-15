@@ -38,6 +38,27 @@ Report mode measures without failing on low contrast. `--min` enables a gate for
 
 Read the authored workflow in [skills/design-guidelines/SKILL.md](../skills/design-guidelines/SKILL.md). Use Create Design Guideline for focused guideline creation or major revision, and Design Guidelines for broader research, audits, and authorized implementation. Install either workflow or both.
 
+## Use the Kiwi Design System skill
+
+Use this workflow when a product has chosen PIP, or when contributing to
+[WhiteKiwi/kiwi-design-system](https://github.com/WhiteKiwi/kiwi-design-system):
+
+```text
+Use kiwi-design-system to build this settings screen with PIP.
+Use kiwi-design-system to propose a shared component improvement, then contribute the agreed change before applying it here.
+```
+
+The skill checks the installed version and source contracts before integration.
+A useful shared gap leads to a short proposal of the need, benefit, and smallest
+scope. Once agreed, the workflow implements the improvement in the design-system
+repository first and verifies it in the consumer. No second consumer is required,
+and existing authorization is reused. Product data and business logic stay local.
+
+Read [skills/kiwi-design-system/SKILL.md](../skills/kiwi-design-system/SKILL.md).
+Integration and contribution references load only for the relevant work. Public
+PIP pages remain explanations of the system; agent procedures live in this skill.
+It is independently installable and does not require the general design skills.
+
 ## Use the Locron skill
 
 Ask the agent to use Locron, or invoke the skill explicitly on clients that expose named skill invocation. For example:
