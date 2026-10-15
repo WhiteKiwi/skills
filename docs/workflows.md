@@ -92,23 +92,3 @@ The workflow targets Loboot 0.1.0 and uses `--json` with `schema_version: "loboo
 For experiments, `--root` isolates offline files and prevents service-manager calls, with `--platform linux|macos` selecting a renderer. Offline add/update/remove still write sandbox files; dry-run itself is read-only. Offline and fake-manager tests do not establish real login-session acceptance.
 
 Loboot is not a scheduler and does not promise exactly-once execution. Discovery cannot adopt foreign services, and built-in logs, Windows, system/boot scope, and secret fields are unsupported. Read the authored [workflow](../skills/loboot/SKILL.md) and on-demand [safety reference](../skills/loboot/references/safety.md).
-
-## Use the Pushman skill
-
-Install [Pushman CLI](https://github.com/pushmanhq/pushman-cli/blob/main/docs/INSTALL.md) 0.1.1 or newer, authorize it through a browser or the iPhone app, and optionally connect its local stdio MCP server:
-
-```sh
-pushman login
-# or: pushman pair
-codex mcp add pushman -- pushman mcp
-```
-
-Then ask the agent directly:
-
-```text
-Use the pushman skill to notify me when this task finishes.
-```
-
-The workflow is tested through Pushman 0.1.1. It prefers typed MCP tools, falls back to stable CLI JSON for sends, treats a direct exact-send request as authorization for one send, and never turns a draft or inspection request into a notification. It does not automatically retry ambiguous results because a retry can create a duplicate and consume quota, and it keeps Homebrew self-update separate from notification and credential operations.
-
-Read the authored workflow in [skills/pushman/SKILL.md](../skills/pushman/SKILL.md) and its on-demand [safety reference](../skills/pushman/references/safety.md).

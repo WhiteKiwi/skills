@@ -37,12 +37,6 @@
       "source": "./plugins/locron",
       "description": "Safely operate, explain, and diagnose Locron.",
       "version": "0.6.1"
-    },
-    {
-      "name": "pushman",
-      "source": "./plugins/pushman",
-      "description": "Safely send and inspect Pushman notifications.",
-      "version": "0.6.1"
     }
   ]
 }
