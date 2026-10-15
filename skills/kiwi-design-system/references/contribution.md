@@ -62,13 +62,22 @@ rendering checks do not cover all browser behavior or complete app accessibility
 
 Read the current `dist/npm/release-plan.json` for the exact tarball filenames.
 In a temporary branch or isolated consumer checkout, assign their real absolute
-paths and install both packages together using the app's package manager:
+paths:
 
 ```sh
 PIP_TOKENS_TGZ=/absolute/path/to/whitekiwi-tokens-VERSION.tgz
 PIP_UI_TGZ=/absolute/path/to/whitekiwi-ui-VERSION.tgz
-npm install "$PIP_TOKENS_TGZ" "$PIP_UI_TGZ"
 ```
+
+Run only the command for the consumer's existing package manager:
+
+| Package manager | Command |
+| --- | --- |
+| pnpm | `pnpm add "$PIP_TOKENS_TGZ" "$PIP_UI_TGZ"` |
+| Yarn | `yarn add "$PIP_TOKENS_TGZ" "$PIP_UI_TGZ"` |
+| npm | `npm install "$PIP_TOKENS_TGZ" "$PIP_UI_TGZ"` |
+
+Preserve the app's lockfile format; do not introduce another package manager.
 
 Token-only apps install only tokens. Record the PIP source revision, tarball
 version, consumer revision, and checks run. If consumer access is missing, provide
