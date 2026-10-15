@@ -185,41 +185,6 @@
           "automation"
         ]
       }
-    },
-    "pushman": {
-      "version": "0.6.1",
-      "display_name": "Pushman",
-      "short_description": "Safely send and inspect Pushman notifications.",
-      "category": "Productivity",
-      "homepage": "https://github.com/pushmanhq/pushman-cli",
-      "required_bins": [
-        "pushman"
-      ],
-      "capabilities": [
-        "Notifications",
-        "Diagnostics"
-      ],
-      "default_prompt": "Use $pushman to send me a notification when this task finishes.",
-      "default_prompts": [
-        "Send a Pushman notification when this task finishes.",
-        "Inspect my Pushman devices and delivery status."
-      ],
-      "keywords": [
-        "pushman",
-        "notifications",
-        "iphone",
-        "automation",
-        "mcp"
-      ],
-      "clawhub": {
-        "slug": "pushman",
-        "name": "Pushman",
-        "topics": [
-          "notifications",
-          "iphone",
-          "automation"
-        ]
-      }
     }
   }
 }

@@ -55,8 +55,6 @@ claude plugin install loboot@whitekiwi-skills
 # or
 claude plugin install locron@whitekiwi-skills
 # or
-claude plugin install pushman@whitekiwi-skills
-# or
 claude plugin install design-guidelines@whitekiwi-skills
 # or
 claude plugin install create-design-guideline@whitekiwi-skills
@@ -77,8 +75,6 @@ codex plugin add loboot@whitekiwi-skills
 # or
 codex plugin add locron@whitekiwi-skills
 # or
-codex plugin add pushman@whitekiwi-skills
-# or
 codex plugin add design-guidelines@whitekiwi-skills
 # or
 codex plugin add create-design-guideline@whitekiwi-skills
@@ -94,8 +90,6 @@ Install a skill directly by its owner-qualified ClawHub reference:
 openclaw skills install @whitekiwi/loboot
 # or
 openclaw skills install @whitekiwi/locron
-# or
-openclaw skills install @whitekiwi/pushman
 # or
 openclaw skills install @whitekiwi/design-guidelines
 # or
@@ -154,10 +148,8 @@ claude plugin update design-guidelines@whitekiwi-skills
 claude plugin update create-design-guideline@whitekiwi-skills
 claude plugin update loboot@whitekiwi-skills
 claude plugin update locron@whitekiwi-skills
-claude plugin update pushman@whitekiwi-skills
 claude plugin uninstall loboot@whitekiwi-skills
 claude plugin uninstall locron@whitekiwi-skills
-claude plugin uninstall pushman@whitekiwi-skills
 claude plugin uninstall design-guidelines@whitekiwi-skills
 claude plugin uninstall create-design-guideline@whitekiwi-skills
 ```
@@ -170,10 +162,8 @@ codex plugin remove design-guidelines@whitekiwi-skills
 codex plugin remove create-design-guideline@whitekiwi-skills
 codex plugin remove loboot@whitekiwi-skills
 codex plugin remove locron@whitekiwi-skills
-codex plugin remove pushman@whitekiwi-skills
 codex plugin add loboot@whitekiwi-skills
 codex plugin add locron@whitekiwi-skills
-codex plugin add pushman@whitekiwi-skills
 codex plugin add design-guidelines@whitekiwi-skills
 codex plugin add create-design-guideline@whitekiwi-skills
 ```
@@ -189,7 +179,6 @@ codex plugin marketplace remove whitekiwi-skills
 ```sh
 openclaw skills update @whitekiwi/loboot
 openclaw skills update @whitekiwi/locron
-openclaw skills update @whitekiwi/pushman
 openclaw skills update @whitekiwi/design-guidelines
 openclaw skills update @whitekiwi/create-design-guideline
 ```

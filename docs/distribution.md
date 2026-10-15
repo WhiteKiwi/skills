@@ -51,7 +51,7 @@ Loboot follows these same source/plugin routes with independent skill version `0
 |---|---|---|
 | [SkillsMP](https://skillsmp.com/) | Index of public GitHub `SKILL.md` files | Sources are compatible with its documented discovery model. Inclusion is controlled by the index; no upload API is assumed or fabricated |
 | [LobeHub Skills](https://lobehub.com/skills) | Third-party skills marketplace; Hermes also integrates LobeHub's agent catalog | No verified skill-publisher API or successful submission is claimed here. A marketplace download endpoint is not an upload API; agent JSON and Agent Skills are different artifacts |
-| [browse.sh](https://browse.sh) | Browserbase's website-specific automation skill catalog, integrated by Hermes | Not an appropriate generic upload target for these design, scheduler, user-service, and notification workflows |
+| [browse.sh](https://browse.sh) | Browserbase's website-specific automation skill catalog, integrated by Hermes | Not an appropriate generic upload target for these design, scheduler, and user-service workflows |
 
 Do not add a token or publish workflow for a service until its official submission method, package contract, ownership, and terms are verified. A future account or persistent credential setup requires the maintainer's action; never commit credentials to this repository.
 

@@ -33,7 +33,6 @@ claude plugin marketplace add .
 codex plugin marketplace add .
 openclaw skills install ./platforms/openclaw/loboot --as loboot
 openclaw skills install ./platforms/openclaw/locron --as locron
-openclaw skills install ./platforms/openclaw/pushman --as pushman
 openclaw skills install ./platforms/openclaw/design-guidelines --as design-guidelines
 openclaw skills install ./platforms/openclaw/create-design-guideline --as create-design-guideline
 ```
