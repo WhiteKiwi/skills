@@ -21,6 +21,12 @@
       "version": "0.6.1"
     },
     {
+      "name": "kiwi-design-system",
+      "source": "./plugins/kiwi-design-system",
+      "description": "Apply PIP and contribute shared design-system improvements.",
+      "version": "0.1.0"
+    },
+    {
       "name": "loboot",
       "source": "./plugins/loboot",
       "description": "Safely manage and diagnose Loboot native user services.",

@@ -125,6 +125,25 @@ The independently versioned [Loboot skill 0.1.0 release](https://github.com/Whit
 
 The workflow requires the separate [Loboot CLI](https://github.com/WhiteKiwi/loboot/blob/main/docs/INSTALL.md) on `PATH`. Check the current official binary/Homebrew/source installation options there; this catalog does not install it, enable a service, or create a ClawHub listing. The skill targets CLI 0.1.0, with offline Linux/macOS coverage; real login-session acceptance must be evaluated separately.
 
+## Kiwi Design System
+
+For a product that uses PIP, choose the dedicated [Kiwi Design System workflow](skills/kiwi-design-system/SKILL.md):
+
+```sh
+npx skills add WhiteKiwi/skills --skill kiwi-design-system
+```
+
+After adding the catalog through the native client steps above, select the
+`kiwi-design-system@whitekiwi-skills` plugin. Hermes can inspect and install
+`WhiteKiwi/skills/skills/kiwi-design-system` from the public source. For OpenClaw
+before a registry release, build this repository and use
+`./platforms/openclaw/kiwi-design-system` through the local-payload instructions
+below. The new skill is not claimed to be published on ClawHub by a GitHub push.
+
+This installs the agent workflow, not the PIP npm packages or the app's build
+runtime. The skill reads the design-system source and uses the target app's
+package manager when integration is requested.
+
 ## Update or remove
 
 ### Claude Code

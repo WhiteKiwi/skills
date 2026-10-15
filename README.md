@@ -8,7 +8,7 @@
 
 **Focused workflows. Explicit boundaries. Verified outcomes.**
 
-Portable agent skills for design guidelines, local schedules, native user services, and personal notifications. Install only what you need.
+Portable agent skills for design guidelines, PIP integration, local schedules, native user services, and personal notifications. Install only what you need.
 
 [Choose a skill](#choose-a-skill) · [Install](INSTALL.md) · [Workflows](docs/workflows.md) · [Distribution](docs/distribution.md) · [Maintain](docs/maintaining.md)
 
@@ -18,11 +18,12 @@ Portable agent skills for design guidelines, local schedules, native user servic
 |---|---|---|
 | Establish or substantially revise a visual system | **[Create Design Guideline](skills/create-design-guideline/SKILL.md)** | An evidence-backed canonical guideline, semantic tokens, theme rules, and an adoption plan |
 | Audit or implement a product's design system | **[Design Guidelines](skills/design-guidelines/SKILL.md)** | Prioritized findings, reusable design decisions, and visual QA for authorized changes |
+| Build with PIP and improve its shared components | **[Kiwi Design System](skills/kiwi-design-system/SKILL.md)** | PIP integration, scoped improvement proposals, upstream contributions, and consumer verification |
 | Find out why a local job did not run | **[Locron](skills/locron/SKILL.md)** | Version-aware diagnosis, dry-run previews, and exact-target verification |
 | Manage native services for your login account | **[Loboot](skills/loboot/SKILL.md)** | Read-only previews, explicit runtime/activation changes, and ownership-aware diagnosis |
 | Get a personal iPhone notification | **[Pushman](skills/pushman/SKILL.md)** | Authorized sends, delivery checks, and protection against duplicate retries |
 
-**Which design skill?** Start with `create-design-guideline` for a new or major-revision guideline. Choose `design-guidelines` for broader creation, audits, or implementation. Each is self-contained; neither requires the other.
+**Which design skill?** Start with `create-design-guideline` for a new or major-revision guideline. Choose `design-guidelines` for broader creation, audits, or implementation. Choose `kiwi-design-system` when the product uses PIP and needs its components, tokens, or a shared improvement. Each is self-contained; none requires another design skill.
 
 ## Quick start
 
@@ -90,13 +91,14 @@ This requires a published ClawHub version. A GitHub push alone does not publish 
 
 </details>
 
-Replace `create-design-guideline` with `design-guidelines`, `locron`, `loboot`, or `pushman`. Adding a catalog never means installing the entire collection.
+Replace `create-design-guideline` with `design-guidelines`, `kiwi-design-system`, `locron`, `loboot`, or `pushman`. Adding a catalog never means installing the entire collection.
 
 ## Try it
 
 ```text
 Use create-design-guideline to create a brand and product guideline for this app.
 Use design-guidelines to audit our light/dark themes and interaction states.
+Use kiwi-design-system to apply PIP and propose a shared component improvement.
 Use locron to explain why the backup job did not run.
 Use loboot to preview this user service without starting or enabling it.
 Use pushman to notify me when this task finishes.
@@ -104,7 +106,8 @@ Use pushman to notify me when this task finishes.
 
 | Workflow | Prerequisites |
 |---|---|
-| Both design skills | Product context and assets; Node.js for the bundled contrast checker, or an equivalent verified measurement |
+| General design skills | Product context and assets; Node.js for the bundled contrast checker, or an equivalent verified measurement |
+| Kiwi Design System | A PIP product or explicit request to adopt it; access to the app and design-system source; Node.js and the repository-pinned package manager for builds |
 | Locron | [Locron CLI](https://github.com/WhiteKiwi/locron#installation) on `PATH`; workflow tested through 0.9.2 |
 | Loboot | [Loboot CLI](https://github.com/WhiteKiwi/loboot/blob/main/docs/INSTALL.md) on `PATH`; 0.1.0 contract, offline-tested on both backends; real login-session acceptance remains separate |
 | Pushman | [Pushman CLI](https://github.com/pushmanhq/pushman-cli/blob/main/docs/INSTALL.md) 0.1.1+, authorized account/device; optional local MCP |
@@ -170,7 +173,7 @@ Hermes can consume this public repository as a community tap. The portable sourc
 
 ## Design
 
-Repository artwork follows [PIP, the WhiteKiwi design system](https://design.whitekiwi.link/): quiet neutral canvas, editorial type, and one kiwi signal. [Artwork contract and source values](docs/repository-design.md). The installable skills remain brand-agnostic.
+Repository artwork follows [PIP, the WhiteKiwi design system](https://design.whitekiwi.link/): quiet neutral canvas, editorial type, and one kiwi signal. [Artwork contract and source values](docs/repository-design.md). The general design skills remain brand-agnostic; `kiwi-design-system` specifically applies and improves PIP.
 
 ## License
 

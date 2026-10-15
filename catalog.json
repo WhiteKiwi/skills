@@ -81,6 +81,42 @@
         ]
       }
     },
+    "kiwi-design-system": {
+      "version": "0.1.0",
+      "display_name": "Kiwi Design System",
+      "short_description": "Apply PIP and contribute shared design-system improvements.",
+      "category": "Design",
+      "homepage": "https://github.com/WhiteKiwi/kiwi-design-system",
+      "required_bins": [
+        "node"
+      ],
+      "capabilities": [
+        "PIP Integration",
+        "Shared Improvements"
+      ],
+      "default_prompt": "Use $kiwi-design-system to apply PIP to this product and propose useful shared improvements.",
+      "default_prompts": [
+        "Apply PIP components and tokens to this product.",
+        "Propose and contribute a shared improvement to the Kiwi design system."
+      ],
+      "keywords": [
+        "pip",
+        "whitekiwi",
+        "kiwi-design-system",
+        "components",
+        "tokens",
+        "design-system"
+      ],
+      "clawhub": {
+        "slug": "kiwi-design-system",
+        "name": "Kiwi Design System",
+        "topics": [
+          "design",
+          "design-system",
+          "components"
+        ]
+      }
+    },
     "loboot": {
       "version": "0.1.0",
       "display_name": "Loboot",

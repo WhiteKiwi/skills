@@ -1,0 +1,21 @@
+{
+  "name": "kiwi-design-system",
+  "version": "0.1.0",
+  "description": "Apply and improve PIP, the WhiteKiwi design system. Use when a task explicitly chooses PIP, works on WhiteKiwi/kiwi-design-system, or changes a product using @whitekiwi/ui or @whitekiwi/tokens. Covers integration, design contracts, shared improvement proposals, upstream contributions, and consumer verification; not a general-purpose brand creation skill.",
+  "author": {
+    "name": "WhiteKiwi",
+    "url": "https://github.com/whitekiwi"
+  },
+  "homepage": "https://github.com/WhiteKiwi/kiwi-design-system",
+  "repository": "https://github.com/whitekiwi/skills",
+  "license": "MIT-0",
+  "keywords": [
+    "pip",
+    "whitekiwi",
+    "kiwi-design-system",
+    "components",
+    "tokens",
+    "design-system"
+  ],
+  "skills": "./skills/"
+}
