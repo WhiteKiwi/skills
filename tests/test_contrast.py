@@ -13,7 +13,7 @@ NODE = shutil.which("node")
 
 @unittest.skipUnless(NODE, "Node.js is not installed")
 class ContrastCheckerTests(unittest.TestCase):
-    script = ROOT / "skills/design-guidelines/scripts/contrast-check.mjs"
+    script = ROOT / "skills/create-design-guideline/scripts/contrast-check.mjs"
 
     def invoke(self, *args: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
@@ -87,10 +87,6 @@ class ContrastCheckerTests(unittest.TestCase):
         result = self.invoke("--min", "--json", "#000:#fff")
         self.assertEqual(result.returncode, 2)
         self.assertTrue(json.loads(result.stdout)["errors"])
-
-
-class CreateDesignGuidelineContrastTests(ContrastCheckerTests):
-    script = ROOT / "skills/create-design-guideline/scripts/contrast-check.mjs"
 
 
 if __name__ == "__main__":

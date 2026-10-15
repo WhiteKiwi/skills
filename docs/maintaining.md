@@ -14,7 +14,7 @@ The install boundary is a plugin, not the entire repository. WhiteKiwi publishes
 
 Each `skills/<name>/` directory is an authored workflow. Its generated `plugins/<name>/` package contains only that workflow. `scripts/build.sh` produces every adapter from those sources, injects only platform-specific metadata, preserves executable helpers, and rejects generated drift. Release archives are deterministic and include checksums.
 
-Each skill has an independent semantic version in `catalog.json` at `skills.<name>.version`. Its Claude/Codex manifests, Claude marketplace entry, ZIP names, and ClawHub publication all use that version. Updating Locron leaves the other skills' versions and archives unchanged. Design Guidelines, Locron, and Pushman kept `0.6.0` when migrating to independent versions; Create Design Guideline and Loboot were each added at `0.1.0`. Future bumps apply only to the changed skill.
+Each skill has an independent semantic version in `catalog.json` at `skills.<name>.version`. Its Claude/Codex manifests, Claude marketplace entry, ZIP names, and ClawHub publication all use that version. Updating Locron leaves the other skills' versions and archives unchanged. Design Guidelines, Locron, and Pushman kept `0.6.0` when migrating to independent versions; Create Design Guideline and Loboot were each added at `0.1.0`. Create Design Guideline `0.2.0` consolidates the former Design Guidelines workflow; the old name is no longer a catalog entry. Future bumps apply only to the changed skill.
 
 ## Local development
 
@@ -33,7 +33,6 @@ claude plugin marketplace add .
 codex plugin marketplace add .
 openclaw skills install ./platforms/openclaw/loboot --as loboot
 openclaw skills install ./platforms/openclaw/locron --as locron
-openclaw skills install ./platforms/openclaw/design-guidelines --as design-guidelines
 openclaw skills install ./platforms/openclaw/create-design-guideline --as create-design-guideline
 ```
 

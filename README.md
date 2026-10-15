@@ -16,13 +16,14 @@ Portable agent skills for design guidelines, PIP integration, local schedules, a
 
 | You want to… | Use | What you get |
 |---|---|---|
-| Establish or substantially revise a visual system | **[Create Design Guideline](skills/create-design-guideline/SKILL.md)** | An evidence-backed canonical guideline, semantic tokens, theme rules, and an adoption plan |
-| Audit or implement a product's design system | **[Design Guidelines](skills/design-guidelines/SKILL.md)** | Prioritized findings, reusable design decisions, and visual QA for authorized changes |
+| Create, audit, or implement a visual system | **[Create Design Guideline](skills/create-design-guideline/SKILL.md)** | A canonical guideline, evidence-backed findings, semantic tokens, and visual QA for authorized changes |
 | Build with PIP and improve its shared components | **[Kiwi Design System](skills/kiwi-design-system/SKILL.md)** | PIP integration, scoped improvement proposals, upstream contributions, and consumer verification |
 | Find out why a local job did not run | **[Locron](skills/locron/SKILL.md)** | Version-aware diagnosis, dry-run previews, and exact-target verification |
 | Manage native services for your login account | **[Loboot](skills/loboot/SKILL.md)** | Read-only previews, explicit runtime/activation changes, and ownership-aware diagnosis |
 
-**Which design skill?** Start with `create-design-guideline` for a new or major-revision guideline. Choose `design-guidelines` for broader creation, audits, or implementation. Choose `kiwi-design-system` when the product uses PIP and needs its components, tokens, or a shared improvement. Each is self-contained; none requires another design skill.
+**Which design skill?** Use `create-design-guideline` for brand and product guideline creation, audits, and implementation. Choose `kiwi-design-system` when the product uses PIP and needs its components, tokens, or a shared improvement. Both are self-contained and independently installable.
+
+`design-guidelines` has been consolidated into `create-design-guideline`. See the [migration guidance](INSTALL.md#migrate-from-design-guidelines) for existing installations.
 
 Pushman is maintained separately in [pushmanhq/skills](https://github.com/pushmanhq/skills).
 
@@ -92,13 +93,14 @@ This requires a published ClawHub version. A GitHub push alone does not publish 
 
 </details>
 
-Replace `create-design-guideline` with `design-guidelines`, `kiwi-design-system`, `locron`, or `loboot`. Adding a catalog never means installing the entire collection.
+Replace `create-design-guideline` with `kiwi-design-system`, `locron`, or `loboot`. Adding a catalog never means installing the entire collection.
 
 ## Try it
 
 ```text
 Use create-design-guideline to create a brand and product guideline for this app.
-Use design-guidelines to audit our light/dark themes and interaction states.
+Use create-design-guideline to audit our light/dark themes and interaction states.
+Use create-design-guideline to implement the approved guideline and verify the changed screens.
 Use kiwi-design-system to apply PIP and propose a shared component improvement.
 Use locron to explain why the backup job did not run.
 Use loboot to preview this user service without starting or enabling it.
@@ -106,7 +108,7 @@ Use loboot to preview this user service without starting or enabling it.
 
 | Workflow | Prerequisites |
 |---|---|
-| General design skills | Product context and assets; Node.js for the bundled contrast checker, or an equivalent verified measurement |
+| Create Design Guideline | Product context and assets; Node.js for the bundled contrast checker, or an equivalent verified measurement |
 | Kiwi Design System | A PIP product or explicit request to adopt it; access to the app and design-system source; Node.js and the repository-pinned package manager for builds |
 | Locron | [Locron CLI](https://github.com/WhiteKiwi/locron#installation) on `PATH`; workflow tested through 0.9.2 |
 | Loboot | [Loboot CLI](https://github.com/WhiteKiwi/loboot/blob/main/docs/INSTALL.md) on `PATH`; 0.1.0 contract, offline-tested on both backends; real login-session acceptance remains separate |
@@ -125,7 +127,7 @@ An instruction-only client can use the guidance, but CLI operations, browser res
 <details>
 <summary><strong>Design helper: measure contrast without guessing</strong></summary>
 
-From either installed design skill's directory:
+From the installed `create-design-guideline` directory:
 
 ```sh
 node scripts/contrast-check.mjs '#171717:#C6FF4A'
@@ -172,7 +174,7 @@ Hermes can consume this public repository as a community tap. The portable sourc
 
 ## Design
 
-Repository artwork follows [PIP, the WhiteKiwi design system](https://design.whitekiwi.link/): quiet neutral canvas, editorial type, and one kiwi signal. [Artwork contract and source values](docs/repository-design.md). The general design skills remain brand-agnostic; `kiwi-design-system` specifically applies and improves PIP.
+Repository artwork follows [PIP, the WhiteKiwi design system](https://design.whitekiwi.link/): quiet neutral canvas, editorial type, and one kiwi signal. [Artwork contract and source values](docs/repository-design.md). `create-design-guideline` remains brand-agnostic; `kiwi-design-system` specifically applies and improves PIP.
 
 ## License
 

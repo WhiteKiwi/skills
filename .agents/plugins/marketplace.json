@@ -17,18 +17,6 @@
       "category": "Design"
     },
     {
-      "name": "design-guidelines",
-      "source": {
-        "source": "local",
-        "path": "./plugins/design-guidelines"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
-      "category": "Design"
-    },
-    {
       "name": "kiwi-design-system",
       "source": {
         "source": "local",
