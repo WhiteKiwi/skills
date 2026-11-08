@@ -107,6 +107,18 @@ class PublicationTests(unittest.TestCase):
         self.assertEqual(commands[0][3], str(self.root / "platforms/openclaw/pushman"))
         self.assertEqual(commands[0][commands[0].index("--version") + 1], "0.3.0")
 
+    def test_design_category_maps_to_clawhub_creative_without_changing_plugin_category(self) -> None:
+        path = self.root / "catalog.json"
+        catalog = json.loads(path.read_text())
+        catalog["skills"]["locron"]["category"] = "Design"
+        path.write_text(json.dumps(catalog))
+        build(self.root, self.root / "dist")
+        result = self.run_script("clawhub.py", "--dry-run", "--skill", "locron")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        command = self.commands()[0]
+        self.assertEqual(command[command.index("--categories") + 1], "creative")
+        self.assertEqual(json.loads(path.read_text())["skills"]["locron"]["category"], "Design")
+
     def test_all_skill_dry_run_uses_each_catalog_version(self) -> None:
         result = self.run_script("clawhub.py", "--dry-run")
         self.assertEqual(result.returncode, 0, result.stderr)

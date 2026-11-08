@@ -50,7 +50,7 @@ def main(argv: list[str] | None = None) -> int:
             "--version",
             info["version"],
             "--categories",
-            info["category"].lower(),
+            "creative" if info["category"] == "Design" else info["category"].lower(),
             "--topics",
             ",".join(clawhub["topics"]),
         ]
