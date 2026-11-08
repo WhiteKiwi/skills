@@ -12,13 +12,13 @@
       "name": "create-design-guideline",
       "source": "./plugins/create-design-guideline",
       "description": "Create, audit, and implement product design guidelines.",
-      "version": "0.2.0"
+      "version": "0.2.1"
     },
     {
       "name": "kiwi-design-system",
       "source": "./plugins/kiwi-design-system",
       "description": "Apply PIP and contribute shared design-system improvements.",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     {
       "name": "loboot",

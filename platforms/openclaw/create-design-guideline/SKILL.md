@@ -23,6 +23,12 @@ Create, audit, and implement a decision system that designers and engineers can 
 
 Use only the references needed for the task. A guideline or audit request does not by itself authorize a product redesign or deployment. Existing user authorization remains valid; ask only about an unresolved choice that materially changes the authorized direction.
 
+When the product explicitly chooses PIP or already consumes `@whitekiwi/ui` or
+`@whitekiwi/tokens`, use the [PIP workflow](https://github.com/WhiteKiwi/skills/tree/main/skills/kiwi-design-system)
+for integration and shared improvements. Load the installed `kiwi-design-system`
+skill when available, otherwise read that source. Keep this skill for product
+brand/guideline decisions; a PIP reference does not authorize changing other brands.
+
 ## Establish the brief and evidence
 
 Inspect existing screens, code, tokens, brand assets, content, and repository instructions. Record the audience, desired impression, constraints, supported surfaces and themes, languages, and requested deliverable. Preserve explicit brand decisions and document assumptions when context is incomplete.
