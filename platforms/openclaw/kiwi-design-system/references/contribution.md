@@ -13,7 +13,7 @@ reproduction or use case. Check existing APIs, tokens, issues, and PRs. A useful
 component, token, or shared composition can be proposed from one product; no
 second consumer is required.
 
-For new scope, a proposal can be brief: “This screen needs X, which the current
+When scope is genuinely new, a proposal can be brief: “This screen needs X, which the current
 API cannot express. Adding Y to PIP would solve it without a local fork. I propose
 adding Y with an example and regression check, then applying it here.” Wait for
 agreement only when that scope has not already been requested or approved.
@@ -84,6 +84,11 @@ version, consumer revision, and checks run. If consumer access is missing, provi
 the reproduction and catalog results and mark actual app verification as pending.
 
 ## Review, release, and adoption
+
+Use the consumer task as the completion boundary. After the authorized release,
+replace the local implementation, remove obsolete style rules, and verify the
+consumer against the published version. Record any remaining adoption as open
+with a concrete next action rather than reporting the entire improvement done.
 
 Describe the concrete problem, resulting behavior, public API/token impact,
 validation, and consumer follow-up in the PR. Link the actual related PRs; do not

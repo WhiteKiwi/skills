@@ -11,7 +11,7 @@
   },
   "skills": {
     "create-design-guideline": {
-      "version": "0.2.0",
+      "version": "0.2.1",
       "display_name": "Create Design Guideline",
       "short_description": "Create, audit, and implement product design guidelines.",
       "category": "Design",
@@ -50,7 +50,7 @@
       }
     },
     "kiwi-design-system": {
-      "version": "0.1.0",
+      "version": "0.2.0",
       "display_name": "Kiwi Design System",
       "short_description": "Apply PIP and contribute shared design-system improvements.",
       "category": "Design",
@@ -62,10 +62,10 @@
         "PIP Integration",
         "Shared Improvements"
       ],
-      "default_prompt": "Use $kiwi-design-system to apply PIP to this product and propose useful shared improvements.",
+      "default_prompt": "Use $kiwi-design-system to apply PIP and carry authorized shared improvements through contribution and consumer adoption.",
       "default_prompts": [
         "Apply PIP components and tokens to this product.",
-        "Propose and contribute a shared improvement to the Kiwi design system."
+        "Contribute an authorized shared PIP improvement, release it, and adopt it in the consumer."
       ],
       "keywords": [
         "pip",

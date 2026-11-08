@@ -12,8 +12,10 @@ metadata:
 # Kiwi Design System
 
 Use PIP's existing visual language and components in the requested product. When
-product work reveals a useful shared improvement, propose it to the user,
-contribute the agreed change to the design system first, then adopt it in the app.
+product work reveals a useful shared improvement, carry it through the existing
+user authorization: prepare the shared change in PIP, verify it in the consumer,
+and complete the authorized release and adoption. For genuinely new scope,
+explain the smallest change and the unresolved decision.
 Do not require another consumer or a minimum usage count.
 
 ## Read the right source
@@ -34,12 +36,14 @@ that a component or capability is absent.
 ## Choose the work
 
 - **Integrate or change a PIP product:** read [references/integration.md](references/integration.md). Prefer existing APIs and composition before adding parallel local UI.
-- **A useful shared gap emerges:** describe the current need, shared benefit, and smallest change to the user. A short proposal is enough; do not require a separate design document or another product example.
+- **A useful shared gap emerges:** inspect the local UI added or overridden in this task, compare the public API, and select the smallest reusable behavior. Continue through the contribution reference when shared improvements are already authorized.
 - **Implement an agreed improvement:** read [references/contribution.md](references/contribution.md). Make the shared change in the design-system repository first, including documentation and verification, then verify its use in the consumer.
 - **Explain or review the system:** read the relevant source and report what exists, its contracts, and demonstrated gaps. Do not turn a review into implementation or apply PIP to an unrelated brand.
 
-For newly discovered scope, get the user's agreement before contributing. Reuse
-an explicit request or earlier approval; do not repeatedly ask for the same work.
+Reuse an explicit request or standing instruction to return shared improvements
+to PIP. Do not turn every missing component into a new approval cycle. Resolve
+only a new product direction, incompatible API, or external action outside that
+authorization. Prepare the concrete reversible work before that decision.
 If the user chooses an app-only solution, respect that scope. If upstream access
 is unavailable, preserve the reproduction and proposed change for handoff.
 
@@ -55,6 +59,26 @@ layers fit together. The repository README explains what the project is and
 where its parts live. Keep agent approval, execution, and rollout procedures in
 this skill and its references. Keep visual rules and API details in their source
 repository instead of copying a second catalog into the skill.
+
+## Close the consumer loop
+
+Review new local controls, copied styles, internal-selector overrides, and missing
+states before declaring the product work done. Record the applicable outcome in
+the existing PR or design contract, not a new report for every task:
+
+- Existing PIP API covers the need: reuse it.
+- Shared improvement: link the PIP change and verify the consumer adoption.
+- Product-only behavior: keep it local and explain the ownership boundary.
+- Unresolved gap: link the existing issue or authorized draft PR, with the next
+  action and workaround removal condition. If external tracking is not authorized,
+  give a concrete handoff with the remaining decision; do not label it completed.
+
+A proposal buried in the product document is not an implemented contribution.
+Inspect other known consumers when useful, but one demonstrated use case is enough.
+Non-React products can share native HTML patterns and component CSS without
+loading the React entry. Read the repository's native-pattern contract; keep
+behavior and accessibility obligations with the markup. Do not force a framework
+migration merely to consume PIP.
 
 ## Verify and finish
 

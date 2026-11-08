@@ -39,6 +39,15 @@ The installed version remains the implementation boundary. If the necessary API
 exists only on `main`, identify it as unreleased. Use the contribution reference's
 tarball workflow to test it; do not describe a source merge as a registry release.
 
+## Return local improvements
+
+Before closing the task, compare new local controls and styles with PIP exports.
+Carry authorized shared improvements through the contribution workflow and link
+the PIP PR from the consumer. If work remains, preserve a tracked next action and
+removal condition; a design-document suggestion alone is not completion.
+For non-React apps, inspect the native-pattern examples and CSS contract before
+reimplementing shared visual states. Product data and theme persistence stay local.
+
 ## Adopt and verify
 
 Review release notes and API/token changes, update matching dependencies and the
