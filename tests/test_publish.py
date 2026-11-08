@@ -118,6 +118,8 @@ class PublicationTests(unittest.TestCase):
         command = self.commands()[0]
         self.assertEqual(command[command.index("--categories") + 1], "creative")
         self.assertEqual(json.loads(path.read_text())["skills"]["locron"]["category"], "Design")
+        manifest = self.root / "plugins/locron/.codex-plugin/plugin.json"
+        self.assertEqual(json.loads(manifest.read_text())["interface"]["category"], "Design")
 
     def test_all_skill_dry_run_uses_each_catalog_version(self) -> None:
         result = self.run_script("clawhub.py", "--dry-run")
